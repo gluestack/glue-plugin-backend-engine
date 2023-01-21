@@ -3,8 +3,9 @@ import { writeFile } from "../helpers/write-file";
 import { fileExists } from "../helpers/file-exists";
 import * as cron from "node-cron";
 import path from "path";
+const colors = require("colors");
 
-export function cronsAdd(program: any, glueStackPlugin: GlueStackPlugin) {
+export const cronsAdd = (program: any, glueStackPlugin: GlueStackPlugin) => {
 	program
 		.command("crons:add")
 		.option("--s, --schedule <special>", "schedule value")
@@ -21,7 +22,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 
 	switch (true) {
 		case "function" in args && "webhook" in args || !args.hasOwnProperty("function") && !args.hasOwnProperty("webhook"):
-			console.log(`Please give either --f function or --w webhook-url`);
+			console.log(colors.brightRed(`> enter either --f function or --w webhook-url`));
 			process.exit(0);
 		case "function" in args:
 			content = await createContent("function", args.function, args.schedule);
@@ -37,8 +38,8 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 		cron.validate(args.schedule);
 
 	if (!isScheduleValid) {
-		console.log(
-			`Please provide a valid schedule value in the format of '* * * * *'.\nFor example: node glue crons:add --s '* * * * *'`
+		console.log(colors.brightRed(
+			`> enter a valid schedule value in the format of '* * * * *'.\n\nexample: node glue crons:add --s '* * * * *'`)
 		);
 		process.exit(0);
 	}
@@ -54,6 +55,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 	}
 
 	await writeFile(cronsFilePath, fileContent);
+	console.log(colors.brightGreen("> Successfully created!"));
 }
 
 export async function createContent(
@@ -67,5 +69,3 @@ export async function createContent(
 		value: value,
 	};
 }
-
-module.exports = { cronsAdd };

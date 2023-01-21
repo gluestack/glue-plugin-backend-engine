@@ -1,8 +1,10 @@
+import path from "path";
 import { GlueStackPlugin } from "src";
 import { writeFile } from "../helpers/write-file";
 import { createFolder } from "../helpers/create-folder";
 import { fileExists } from "../helpers/file-exists";
-import path from "path";
+
+const colors = require("colors");
 
 interface contentType {
 	kind: string;
@@ -33,19 +35,19 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 	const appEventPath = "./backend/events/app";
 
 	if (!args.table && !args.function && !args.webhook && !args.app) {
-		console.log(
+		console.log(colors.brightRed(
 			"Please provide at least one of the following options: --table, --function, --webhook, --app"
-		);
+		));
 		process.exit(0);
 	}
 
 	switch (true) {
 		case "function" in args && "webhook" in args || !args.hasOwnProperty("function") && !args.hasOwnProperty("webhook"):
-			console.log("please give either --f function or --w webhook-url");
+			console.log(colors.brightRed("> enter either --f function or --w webhook-url"));
 			process.exit(0);
 
 		case "table" in args && "app" in args:
-			console.log("please give either table or an app");
+			console.log(colors.brightRed("> provide either --table or --app"));
 			process.exit(0);
 
 		case args.hasOwnProperty("function"):
@@ -63,7 +65,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 			const [folderName, ...events] = args.table.split(":");
 			args.table = { folderName, events: events[0].split(",") };
 		} catch (error) {
-			console.log("Table input is not valid please run --help");
+			console.log(colors.brightRed("> Table input is not valid please run --help"));
 			process.exit(0);
 		}
 
@@ -81,9 +83,10 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 						`${args.table.folderName}/${element}.js`
 					);
 					const data = require(dbEventFilePath);
+					const arrayOfObjects = data();
 
-					if (data.length !== 0) {
-						const objExist = data.find((obj: any) => {
+					if (arrayOfObjects.length !== 0) {
+						const objExist = arrayOfObjects.find((obj: any) => {
 							return (
 								obj.kind === content.kind &&
 								obj.type === content.type &&
@@ -92,25 +95,26 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 						});
 
 						if (objExist) {
-							console.log(`${content.type} already exist!`);
+							console.log(colors.brightRed(`> ${content.type} already exist!`));
 							process.exit(0);
 						}
 					}
 
-					data.push(content);
-					fileContent = `module.exports = ${JSON.stringify(data, null, 2)}`;
+					arrayOfObjects.push(content);
+					fileContent = `module.exports = () => ${JSON.stringify(arrayOfObjects, null, 2)};`;
 				} else {
-					fileContent = `module.exports = [${JSON.stringify(
+					fileContent = `module.exports = () => [${JSON.stringify(
 						content,
 						null,
 						2
-					)}]`;
+					)}];`;
 				}
 
 				await writeFile(
 					`${dbEventPath}/${args.table.folderName}/${element}.js`,
 					fileContent
 				);
+				console.log(colors.brightGreen("> Successfully created!"));
 			} catch (error) {
 				console.log(error);
 			}
@@ -126,12 +130,29 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 					args.app
 				);
 				const data = require(appEventFilePath);
-				data.push(content);
-				fileContent = `module.exports = ${JSON.stringify(data, null, 2)}`;
+				const arrayOfObjects = data();
+
+				if (arrayOfObjects.length !== 0) {
+					const objExist = arrayOfObjects.find((obj: any) => {
+						return (
+							obj.kind === content.kind &&
+							obj.type === content.type &&
+							obj.value === content.value
+						);
+					});
+
+					if (objExist) {
+						console.log(colors.brightRed(`> ${content.type} already exist!`));
+						process.exit(0);
+					}
+				}
+				arrayOfObjects.push(content);
+				fileContent = `module.exports = ()=> ${JSON.stringify(arrayOfObjects, null, 2)};`;
 			} else {
-				fileContent = `module.exports = [${JSON.stringify(content, null, 2)}]`;
+				fileContent = `module.exports = () => [${JSON.stringify(content, null, 2)}];`;
 			}
 			await writeFile(`${appEventPath}/${args.app}.js`, fileContent);
+			console.log(colors.brightGreen("> Successfully created!"));
 		} catch (error) {
 			console.log(error);
 		}
@@ -145,5 +166,3 @@ export async function createContent(type: string, value: string) {
 		value: value,
 	};
 }
-
-module.exports = { eventsAdd };

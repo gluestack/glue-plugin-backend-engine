@@ -50,6 +50,7 @@ exports.list = exports.cronsList = void 0;
 var file_exists_1 = require("../helpers/file-exists");
 var path_1 = __importDefault(require("path"));
 var cli_table3_1 = __importDefault(require("cli-table3"));
+var file_time_stamp_1 = require("../helpers/file-time-stamp");
 var colors = require("colors");
 function cronsList(program, glueStackPlugin) {
     program
@@ -61,7 +62,7 @@ exports.cronsList = cronsList;
 function list(_glueStackPlugin) {
     var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var cronsFilePath, table, dataFilePath, fileData, _d, fileData_1, fileData_1_1, data, run, e_1_1;
+        var cronsFilePath, table, dataFilePath, fileData, _d, fileData_1, fileData_1_1, data, run, e_1_1, lastModified;
         var _e;
         return __generator(this, function (_f) {
             switch (_f.label) {
@@ -76,13 +77,13 @@ function list(_glueStackPlugin) {
                     return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
                 case 1:
                     if (!(_f.sent())) {
-                        console.log("> Crons file missing!");
+                        console.log(colors.brightRed("> Crons file missing!"));
                         process.exit(0);
                     }
                     dataFilePath = path_1.default.join(process.cwd(), cronsFilePath.slice(2));
                     fileData = require(dataFilePath);
                     if (fileData.length <= 0) {
-                        console.log("> Crons file empty! Please add one and try again.");
+                        console.log(colors.brightRed("> Crons file empty! Please add one and try again."));
                         process.exit(0);
                     }
                     _f.label = 2;
@@ -124,11 +125,14 @@ function list(_glueStackPlugin) {
                 case 12: return [7];
                 case 13:
                     console.log(table.toString());
+                    return [4, (0, file_time_stamp_1.timeStamp)(cronsFilePath)];
+                case 14:
+                    lastModified = _f.sent();
+                    console.log(colors.yellow("Crons last updated: ".concat(lastModified)));
                     return [2];
             }
         });
     });
 }
 exports.list = list;
-module.exports = { cronsList: cronsList };
 //# sourceMappingURL=crons-list.js.map

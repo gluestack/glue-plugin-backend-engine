@@ -47,10 +47,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createContent = exports.create = exports.eventsAdd = void 0;
+var path_1 = __importDefault(require("path"));
 var write_file_1 = require("../helpers/write-file");
 var create_folder_1 = require("../helpers/create-folder");
 var file_exists_1 = require("../helpers/file-exists");
-var path_1 = __importDefault(require("path"));
+var colors = require("colors");
 function eventsAdd(program, glueStackPlugin) {
     program
         .command("events:add")
@@ -67,14 +68,14 @@ exports.eventsAdd = eventsAdd;
 function create(_glueStackPlugin, args) {
     var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var fileContent, content, dbEventPath, appEventPath, _d, _e, folderName, events, _f, _g, _h, element, dbEventFilePath, data, objExist, error_1, e_1_1, appEventFilePath, data, error_2;
+        var fileContent, content, dbEventPath, appEventPath, _d, _e, folderName, events, _f, _g, _h, element, dbEventFilePath, data, arrayOfObjects, objExist, error_1, e_1_1, appEventFilePath, data, arrayOfObjects, objExist, error_2;
         return __generator(this, function (_j) {
             switch (_j.label) {
                 case 0:
                     dbEventPath = "./backend/events/database";
                     appEventPath = "./backend/events/app";
                     if (!args.table && !args.function && !args.webhook && !args.app) {
-                        console.log("Please provide at least one of the following options: --table, --function, --webhook, --app");
+                        console.log(colors.brightRed("Please provide at least one of the following options: --table, --function, --webhook, --app"));
                         process.exit(0);
                     }
                     _d = true;
@@ -86,11 +87,11 @@ function create(_glueStackPlugin, args) {
                     }
                     return [3, 7];
                 case 1:
-                    console.log("please give either --f function or --w webhook-url");
+                    console.log(colors.brightRed("> enter either --f function or --w webhook-url"));
                     process.exit(0);
                     _j.label = 2;
                 case 2:
-                    console.log("please give either table or an app");
+                    console.log(colors.brightRed("> provide either --table or --app"));
                     process.exit(0);
                     _j.label = 3;
                 case 3: return [4, createContent("function", args.function)];
@@ -108,7 +109,7 @@ function create(_glueStackPlugin, args) {
                         args.table = { folderName: folderName, events: events[0].split(",") };
                     }
                     catch (error) {
-                        console.log("Table input is not valid please run --help");
+                        console.log(colors.brightRed("> Table input is not valid please run --help"));
                         process.exit(0);
                     }
                     return [4, (0, create_folder_1.createFolder)("".concat(dbEventPath, "/").concat(args.table.folderName))];
@@ -136,26 +137,28 @@ function create(_glueStackPlugin, args) {
                     if (_j.sent()) {
                         dbEventFilePath = path_1.default.join(process.cwd(), dbEventPath.slice(2), "".concat(args.table.folderName, "/").concat(element, ".js"));
                         data = require(dbEventFilePath);
-                        if (data.length !== 0) {
-                            objExist = data.find(function (obj) {
+                        arrayOfObjects = data();
+                        if (arrayOfObjects.length !== 0) {
+                            objExist = arrayOfObjects.find(function (obj) {
                                 return (obj.kind === content.kind &&
                                     obj.type === content.type &&
                                     obj.value === content.value);
                             });
                             if (objExist) {
-                                console.log("".concat(content.type, " already exist!"));
+                                console.log(colors.brightRed("> ".concat(content.type, " already exist!")));
                                 process.exit(0);
                             }
                         }
-                        data.push(content);
-                        fileContent = "module.exports = ".concat(JSON.stringify(data, null, 2));
+                        arrayOfObjects.push(content);
+                        fileContent = "module.exports = () => ".concat(JSON.stringify(arrayOfObjects, null, 2), ";");
                     }
                     else {
-                        fileContent = "module.exports = [".concat(JSON.stringify(content, null, 2), "]");
+                        fileContent = "module.exports = () => [".concat(JSON.stringify(content, null, 2), "];");
                     }
                     return [4, (0, write_file_1.writeFile)("".concat(dbEventPath, "/").concat(args.table.folderName, "/").concat(element, ".js"), fileContent)];
                 case 15:
                     _j.sent();
+                    console.log(colors.brightGreen("> Successfully created!"));
                     return [3, 17];
                 case 16:
                     error_1 = _j.sent();
@@ -193,15 +196,28 @@ function create(_glueStackPlugin, args) {
                     if (_j.sent()) {
                         appEventFilePath = path_1.default.join(process.cwd(), appEventPath.slice(2), args.app);
                         data = require(appEventFilePath);
-                        data.push(content);
-                        fileContent = "module.exports = ".concat(JSON.stringify(data, null, 2));
+                        arrayOfObjects = data();
+                        if (arrayOfObjects.length !== 0) {
+                            objExist = arrayOfObjects.find(function (obj) {
+                                return (obj.kind === content.kind &&
+                                    obj.type === content.type &&
+                                    obj.value === content.value);
+                            });
+                            if (objExist) {
+                                console.log(colors.brightRed("> ".concat(content.type, " already exist!")));
+                                process.exit(0);
+                            }
+                        }
+                        arrayOfObjects.push(content);
+                        fileContent = "module.exports = ()=> ".concat(JSON.stringify(arrayOfObjects, null, 2), ";");
                     }
                     else {
-                        fileContent = "module.exports = [".concat(JSON.stringify(content, null, 2), "]");
+                        fileContent = "module.exports = () => [".concat(JSON.stringify(content, null, 2), "];");
                     }
                     return [4, (0, write_file_1.writeFile)("".concat(appEventPath, "/").concat(args.app, ".js"), fileContent)];
                 case 30:
                     _j.sent();
+                    console.log(colors.brightGreen("> Successfully created!"));
                     return [3, 32];
                 case 31:
                     error_2 = _j.sent();
@@ -225,5 +241,4 @@ function createContent(type, value) {
     });
 }
 exports.createContent = createContent;
-module.exports = { eventsAdd: eventsAdd };
 //# sourceMappingURL=events-add.js.map

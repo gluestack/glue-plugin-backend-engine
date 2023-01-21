@@ -1,13 +1,18 @@
 import { GlueStackPlugin } from "src";
-import fs from "fs";
 import path from "path";
-const { MultiSelect, confirm } = require("enquirer");
+import { fileExists } from "../helpers/file-exists";
+import { writeFile } from '../helpers/write-file';
+const { MultiSelect, confirm } = require('enquirer');
+const colors = require("colors");
 
 export function eventRemove(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
 		.command("events:remove")
-		.option("--app", "list all app events to delete")
-		.option("--database", "list all database events to delete")
+		.option("--a, --app <app-name>", "Name of the event")
+		.option(
+			"--t, --table <table-name>",
+			"Name of the table in database (table-name:event1,event2)"
+		)
 		.description("List the events with select option to delete selected events")
 		.action((args: any) => deleteEvents(glueStackPlugin, args));
 }
@@ -16,69 +21,70 @@ export async function deleteEvents(
 	_glueStackPlugin: GlueStackPlugin,
 	args: any
 ) {
-	const eventTypes: any = {
-		app: "./backend/events/app",
-		database: "./backend/events/database",
-	};
 
-	const selectedEventTypes = Object.keys(args).filter((key) =>
-		eventTypes.hasOwnProperty(key)
-	);
+	let filePath: string;
 
-	if (selectedEventTypes.length === 0) {
-		console.log(
-			"please give at least one event type for eg:\nnode glue events:delete --app or --database "
-		);
-		return;
+	switch (true) {
+		case "table" in args && "app" in args:
+			console.log(colors.brightRed("> provide either --table or --app"));
+			process.exit(0);
+
+		case Object.entries(args).length === 0:
+			console.log(colors.brightRed("> missing --table or --app"))
+			process.exit(0)
+
+		case args.hasOwnProperty('app'):
+			filePath = `./backend/events/app/${args.app}.js`;
+			break;
+
+		case args.hasOwnProperty('table'):
+			const dir = args.table.split(':')[0];
+			const file = args.table.split(':')[1];
+			filePath = `./backend/events/database/${dir}/${file}.js`;
+			break;
 	}
 
-	for await (const eventType of selectedEventTypes) {
-		const files = fs.readdirSync(eventTypes[eventType]);
-		await deleteSelected(files, eventTypes[eventType]);
-	}
-}
-
-const deleteSelected = async (files: string[], eventPath: string) => {
-	const choices = files.map((file, index) => {
-		return { name: file, value: index };
-	});
-
-	if (choices.length === 0) {
-		console.log("No events found to delete.");
+	if (!await fileExists(filePath)) {
+		console.log(colors.brightRed('> Event file missing!'));
 		process.exit(0);
 	}
 
-	const prompted = new MultiSelect({
-		name: "files",
-		message:
-			"Select the files and directories you want to delete by pressing <space>:",
-		choices,
-	});
-	const selectedIndexes = await prompted.run();
+	const dataFilePath = path.join(process.cwd(), filePath.slice(2));
+	const fileData = require(dataFilePath);
+	const arrayOfObjects = fileData();
 
-	if (selectedIndexes.length === 0) {
+
+	if (arrayOfObjects.length <= 0) {
+		console.log(colors.brightRed('> Event file empty! Please add one and try again.'));
 		process.exit(0);
 	}
 
-	const userConfirm = await confirm({
-		name: "question",
-		message: "Are you sure you want to delete the selected files and folders?",
+	let choices = arrayOfObjects.map((obj: any, index: any) => ({
+		name: `{"kind": "${obj.kind}", "type": "${obj.type}", "value": "${obj.value}"}`,
+		value: index
+	}));
+
+	const prompt = new MultiSelect({
+		name: 'files',
+		message: 'Select the objects you want to delete by pressing <space>:',
+		choices
 	});
 
-	if (!userConfirm) {
-		process.exit(0);
-	}
+	const responses = await prompt.run();
+	if (responses.length !== 0) {
+		const userConfirm = await confirm({
+			name: 'question',
+			message: 'Are you sure you want to delete the selected data?',
+		});
 
-	for (const index of selectedIndexes) {
-		const filePath = path.join(eventPath, index);
-		const stats = await fs.promises.lstat(filePath);
-		if (stats.isDirectory()) {
-			await fs.promises.rm(filePath, { recursive: true });
-		} else {
-			await fs.promises.unlink(filePath);
+		if (userConfirm) {
+			choices = choices
+				.filter((choice: any) => !responses.includes(choice.name))
+				.map((choice: any) => JSON.parse(choice.name));
+
+			await writeFile(filePath, `module.exports = () => ${JSON.stringify(choices, null, 2)};`);
+			console.log(colors.brightGreen("> Successfully removed!"));
 		}
-		console.log(`Deleted ${index} event`);
 	}
-};
 
-module.exports = { eventRemove };
+}

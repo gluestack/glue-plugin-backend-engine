@@ -2,6 +2,8 @@ import path from 'path';
 import { GlueStackPlugin } from "src";
 import { writeFile } from '../helpers/write-file';
 import { fileExists } from "../helpers/file-exists";
+
+const colors = require("colors");
 const { MultiSelect, confirm } = require('enquirer');
 
 export function cronsRemove(program: any, glueStackPlugin: GlueStackPlugin) {
@@ -19,7 +21,7 @@ export async function deleteEvents(
 
 	const cronsFilePath = './backend/crons/crons.json';
 	if (!await fileExists(cronsFilePath)) {
-		console.log('> Crons file missing!');
+		console.log(colors.brightRed('> Crons file missing!'));
 		process.exit(0);
 	}
 
@@ -27,7 +29,7 @@ export async function deleteEvents(
 	const fileData = require(dataFilePath);
 
 	if (fileData.length <= 0) {
-		console.log('> Crons file empty! Please add one and try again.');
+		console.log(colors.brightRed('> Crons file empty! Please add one and try again.'));
 		process.exit(0);
 	}
 
@@ -46,7 +48,7 @@ export async function deleteEvents(
 	if (responses.length !== 0) {
 		const userConfirm = await confirm({
 			name: 'question',
-			message: 'Are you sure you want to delete the selected files and folders?',
+			message: 'Are you sure you want to delete the selected data?',
 		});
 
 		if (userConfirm) {
@@ -55,9 +57,8 @@ export async function deleteEvents(
 				.map((choice: any) => JSON.parse(choice.name));
 
 			await writeFile(cronsFilePath, JSON.stringify(choices, null, 2));
+			console.log(colors.brightGreen("> Successfully removed!"));
 		}
 	}
 
 }
-
-module.exports = { cronsRemove };

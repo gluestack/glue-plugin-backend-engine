@@ -35,153 +35,92 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEvents = exports.eventRemove = void 0;
-var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
-var _a = require("enquirer"), MultiSelect = _a.MultiSelect, confirm = _a.confirm;
+var file_exists_1 = require("../helpers/file-exists");
+var write_file_1 = require("../helpers/write-file");
+var _a = require('enquirer'), MultiSelect = _a.MultiSelect, confirm = _a.confirm;
+var colors = require("colors");
 function eventRemove(program, glueStackPlugin) {
     program
         .command("events:remove")
-        .option("--app", "list all app events to delete")
-        .option("--database", "list all database events to delete")
+        .option("--a, --app <app-name>", "Name of the event")
+        .option("--t, --table <table-name>", "Name of the table in database (table-name:event1,event2)")
         .description("List the events with select option to delete selected events")
         .action(function (args) { return deleteEvents(glueStackPlugin, args); });
 }
 exports.eventRemove = eventRemove;
 function deleteEvents(_glueStackPlugin, args) {
-    var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var eventTypes, selectedEventTypes, _d, selectedEventTypes_1, selectedEventTypes_1_1, eventType, files, e_1_1;
-        return __generator(this, function (_e) {
-            switch (_e.label) {
+        var filePath, dir, file, dataFilePath, fileData, arrayOfObjects, choices, prompt, responses, userConfirm;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    eventTypes = {
-                        app: "./backend/events/app",
-                        database: "./backend/events/database",
-                    };
-                    selectedEventTypes = Object.keys(args).filter(function (key) {
-                        return eventTypes.hasOwnProperty(key);
-                    });
-                    if (selectedEventTypes.length === 0) {
-                        console.log("please give at least one event type for eg:\nnode glue events:delete --app or --database ");
-                        return [2];
+                    switch (true) {
+                        case "table" in args && "app" in args:
+                            console.log(colors.brightRed("> provide either --table or --app"));
+                            process.exit(0);
+                        case Object.entries(args).length === 0:
+                            console.log(colors.brightRed("> missing --table or --app"));
+                            process.exit(0);
+                        case args.hasOwnProperty('app'):
+                            filePath = "./backend/events/app/".concat(args.app, ".js");
+                            break;
+                        case args.hasOwnProperty('table'):
+                            dir = args.table.split(':')[0];
+                            file = args.table.split(':')[1];
+                            filePath = "./backend/events/database/".concat(dir, "/").concat(file, ".js");
+                            break;
                     }
-                    _e.label = 1;
+                    return [4, (0, file_exists_1.fileExists)(filePath)];
                 case 1:
-                    _e.trys.push([1, 9, 10, 15]);
-                    _d = true, selectedEventTypes_1 = __asyncValues(selectedEventTypes);
-                    _e.label = 2;
-                case 2: return [4, selectedEventTypes_1.next()];
+                    if (!(_a.sent())) {
+                        console.log(colors.brightRed('> Event file missing!'));
+                        process.exit(0);
+                    }
+                    dataFilePath = path_1.default.join(process.cwd(), filePath.slice(2));
+                    fileData = require(dataFilePath);
+                    arrayOfObjects = fileData();
+                    if (arrayOfObjects.length <= 0) {
+                        console.log(colors.brightRed('> Event file empty! Please add one and try again.'));
+                        process.exit(0);
+                    }
+                    choices = arrayOfObjects.map(function (obj, index) { return ({
+                        name: "{\"kind\": \"".concat(obj.kind, "\", \"type\": \"").concat(obj.type, "\", \"value\": \"").concat(obj.value, "\"}"),
+                        value: index
+                    }); });
+                    prompt = new MultiSelect({
+                        name: 'files',
+                        message: 'Select the objects you want to delete by pressing <space>:',
+                        choices: choices
+                    });
+                    return [4, prompt.run()];
+                case 2:
+                    responses = _a.sent();
+                    if (!(responses.length !== 0)) return [3, 5];
+                    return [4, confirm({
+                            name: 'question',
+                            message: 'Are you sure you want to delete the selected data?',
+                        })];
                 case 3:
-                    if (!(selectedEventTypes_1_1 = _e.sent(), _a = selectedEventTypes_1_1.done, !_a)) return [3, 8];
-                    _c = selectedEventTypes_1_1.value;
-                    _d = false;
-                    _e.label = 4;
+                    userConfirm = _a.sent();
+                    if (!userConfirm) return [3, 5];
+                    choices = choices
+                        .filter(function (choice) { return !responses.includes(choice.name); })
+                        .map(function (choice) { return JSON.parse(choice.name); });
+                    return [4, (0, write_file_1.writeFile)(filePath, "module.exports = () => ".concat(JSON.stringify(choices, null, 2), ";"))];
                 case 4:
-                    _e.trys.push([4, , 6, 7]);
-                    eventType = _c;
-                    files = fs_1.default.readdirSync(eventTypes[eventType]);
-                    return [4, deleteSelected(files, eventTypes[eventType])];
-                case 5:
-                    _e.sent();
-                    return [3, 7];
-                case 6:
-                    _d = true;
-                    return [7];
-                case 7: return [3, 2];
-                case 8: return [3, 15];
-                case 9:
-                    e_1_1 = _e.sent();
-                    e_1 = { error: e_1_1 };
-                    return [3, 15];
-                case 10:
-                    _e.trys.push([10, , 13, 14]);
-                    if (!(!_d && !_a && (_b = selectedEventTypes_1.return))) return [3, 12];
-                    return [4, _b.call(selectedEventTypes_1)];
-                case 11:
-                    _e.sent();
-                    _e.label = 12;
-                case 12: return [3, 14];
-                case 13:
-                    if (e_1) throw e_1.error;
-                    return [7];
-                case 14: return [7];
-                case 15: return [2];
+                    _a.sent();
+                    console.log(colors.brightGreen("> Successfully removed!"));
+                    _a.label = 5;
+                case 5: return [2];
             }
         });
     });
 }
 exports.deleteEvents = deleteEvents;
-var deleteSelected = function (files, eventPath) { return __awaiter(void 0, void 0, void 0, function () {
-    var choices, prompted, selectedIndexes, userConfirm, _i, selectedIndexes_1, index, filePath, stats;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                choices = files.map(function (file, index) {
-                    return { name: file, value: index };
-                });
-                if (choices.length === 0) {
-                    console.log("No events found to delete.");
-                    process.exit(0);
-                }
-                prompted = new MultiSelect({
-                    name: "files",
-                    message: "Select the files and directories you want to delete by pressing <space>:",
-                    choices: choices,
-                });
-                return [4, prompted.run()];
-            case 1:
-                selectedIndexes = _a.sent();
-                if (selectedIndexes.length === 0) {
-                    process.exit(0);
-                }
-                return [4, confirm({
-                        name: "question",
-                        message: "Are you sure you want to delete the selected files and folders?",
-                    })];
-            case 2:
-                userConfirm = _a.sent();
-                if (!userConfirm) {
-                    process.exit(0);
-                }
-                _i = 0, selectedIndexes_1 = selectedIndexes;
-                _a.label = 3;
-            case 3:
-                if (!(_i < selectedIndexes_1.length)) return [3, 10];
-                index = selectedIndexes_1[_i];
-                filePath = path_1.default.join(eventPath, index);
-                return [4, fs_1.default.promises.lstat(filePath)];
-            case 4:
-                stats = _a.sent();
-                if (!stats.isDirectory()) return [3, 6];
-                return [4, fs_1.default.promises.rm(filePath, { recursive: true })];
-            case 5:
-                _a.sent();
-                return [3, 8];
-            case 6: return [4, fs_1.default.promises.unlink(filePath)];
-            case 7:
-                _a.sent();
-                _a.label = 8;
-            case 8:
-                console.log("Deleted ".concat(index, " event"));
-                _a.label = 9;
-            case 9:
-                _i++;
-                return [3, 3];
-            case 10: return [2];
-        }
-    });
-}); };
-module.exports = { eventRemove: eventRemove };
 //# sourceMappingURL=event-remove.js.map

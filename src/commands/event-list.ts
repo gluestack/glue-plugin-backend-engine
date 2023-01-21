@@ -1,8 +1,11 @@
 import { GlueStackPlugin } from "src";
+
 import fs from "fs";
-import promises from 'fs/promises'
 import path from "path";
 import Table from "cli-table3";
+import promises from "fs/promises";
+import { timeStamp } from "../helpers/file-time-stamp";
+
 const colors = require("colors");
 
 interface listObject {
@@ -11,6 +14,7 @@ interface listObject {
 		fun: Array<String>;
 		webhook: Array<String>;
 	};
+	lastModified: string;
 }
 
 export function eventsList(program: any, glueStackPlugin: GlueStackPlugin) {
@@ -26,11 +30,13 @@ export function eventsList(program: any, glueStackPlugin: GlueStackPlugin) {
 export async function list(_glueStackPlugin: GlueStackPlugin, args: any) {
 	const dbEventPath = "./backend/events/database";
 	const appEventPath = "./backend/events/app";
+
 	let table = new Table({
 		head: [
 			colors.brightGreen("Filepath"),
 			colors.brightGreen("Functions"),
 			colors.brightGreen("Webhooks"),
+			colors.brightGreen("Modified on"),
 		],
 	});
 	switch (true) {
@@ -72,7 +78,7 @@ async function getEvents(eventPath: any, table: any, dbEvent: boolean) {
 					: path.join(process.cwd(), eventPath.slice(2), file);
 
 				const data = require(eventFilePath);
-
+				const arrayOfObjects = data();
 				listData = {
 					fileName: dbEvent
 						? eventFilePath.split("/").slice(-3).join("/")
@@ -81,9 +87,12 @@ async function getEvents(eventPath: any, table: any, dbEvent: boolean) {
 						fun: [],
 						webhook: [],
 					},
+					lastModified: "",
 				};
+				const lastModifiedDays: any = await timeStamp(eventFilePath);
+				listData.lastModified = lastModifiedDays;
 
-				await data.map((events: any) => {
+				await arrayOfObjects.map((events: any) => {
 					if (events.type === "function") {
 						listData.event.fun.push(events.value);
 					}
@@ -92,10 +101,14 @@ async function getEvents(eventPath: any, table: any, dbEvent: boolean) {
 						listData.event.webhook.push(events.value);
 					}
 				});
-				const allFunction = listData.event.fun.join("\n")
-				const allWebhooks = listData.event.webhook.join("\n")
 
-				table.push({ [listData.fileName]: [allFunction, allWebhooks] });
+				const allFunction = listData.event.fun.join("\n");
+				const allWebhooks = listData.event.webhook.join("\n");
+				const lastModified = listData.lastModified;
+
+				table.push({
+					[listData.fileName]: [allFunction, allWebhooks, lastModified],
+				});
 			} else {
 				await getEvents(eventFilePath, table, true);
 			}
@@ -109,7 +122,7 @@ async function getFiles(filePath: string) {
 	return new Promise((resolve, reject) => {
 		fs.readdir(filePath, (err: Error, files: string[]) => {
 			if (err) {
-				console.log("> No files found");
+				console.log(colors.brightRed("> No files found!"));
 				process.exit(0);
 			}
 			return resolve(files);
@@ -130,5 +143,3 @@ async function isDirectory(path: any) {
 		process.exit(0);
 	}
 }
-
-module.exports = { eventsList };

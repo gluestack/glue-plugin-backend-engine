@@ -2,6 +2,7 @@ import { GlueStackPlugin } from "src";
 import { fileExists } from "../helpers/file-exists";
 import path from "path";
 import Table from "cli-table3";
+import { timeStamp } from "../helpers/file-time-stamp";
 const colors = require("colors");
 
 export function cronsList(program: any, glueStackPlugin: GlueStackPlugin) {
@@ -21,7 +22,7 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 	});
 
 	if (!(await fileExists(cronsFilePath))) {
-		console.log("> Crons file missing!");
+		console.log(colors.brightRed("> Crons file missing!"));
 		process.exit(0);
 	}
 
@@ -29,7 +30,7 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 	const fileData = require(dataFilePath);
 
 	if (fileData.length <= 0) {
-		console.log("> Crons file empty! Please add one and try again.");
+		console.log(colors.brightRed("> Crons file empty! Please add one and try again."));
 		process.exit(0);
 	}
 
@@ -39,6 +40,7 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 	}
 
 	console.log(table.toString());
-}
 
-module.exports = { cronsList };
+	const lastModified = await timeStamp(cronsFilePath)
+	console.log(colors.yellow(`Crons last updated: ${lastModified}`))
+}

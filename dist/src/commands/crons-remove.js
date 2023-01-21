@@ -43,6 +43,7 @@ exports.deleteEvents = exports.cronsRemove = void 0;
 var path_1 = __importDefault(require("path"));
 var write_file_1 = require("../helpers/write-file");
 var file_exists_1 = require("../helpers/file-exists");
+var colors = require("colors");
 var _a = require('enquirer'), MultiSelect = _a.MultiSelect, confirm = _a.confirm;
 function cronsRemove(program, glueStackPlugin) {
     program
@@ -61,13 +62,13 @@ function deleteEvents(_glueStackPlugin) {
                     return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
                 case 1:
                     if (!(_a.sent())) {
-                        console.log('> Crons file missing!');
+                        console.log(colors.brightRed('> Crons file missing!'));
                         process.exit(0);
                     }
                     dataFilePath = path_1.default.join(process.cwd(), cronsFilePath.slice(2));
                     fileData = require(dataFilePath);
                     if (fileData.length <= 0) {
-                        console.log('> Crons file empty! Please add one and try again.');
+                        console.log(colors.brightRed('> Crons file empty! Please add one and try again.'));
                         process.exit(0);
                     }
                     choices = fileData.map(function (obj, index) { return ({
@@ -85,7 +86,7 @@ function deleteEvents(_glueStackPlugin) {
                     if (!(responses.length !== 0)) return [3, 5];
                     return [4, confirm({
                             name: 'question',
-                            message: 'Are you sure you want to delete the selected files and folders?',
+                            message: 'Are you sure you want to delete the selected data?',
                         })];
                 case 3:
                     userConfirm = _a.sent();
@@ -96,6 +97,7 @@ function deleteEvents(_glueStackPlugin) {
                     return [4, (0, write_file_1.writeFile)(cronsFilePath, JSON.stringify(choices, null, 2))];
                 case 4:
                     _a.sent();
+                    console.log(colors.brightGreen("> Successfully removed!"));
                     _a.label = 5;
                 case 5: return [2];
             }
@@ -103,5 +105,4 @@ function deleteEvents(_glueStackPlugin) {
     });
 }
 exports.deleteEvents = deleteEvents;
-module.exports = { cronsRemove: cronsRemove };
 //# sourceMappingURL=crons-remove.js.map

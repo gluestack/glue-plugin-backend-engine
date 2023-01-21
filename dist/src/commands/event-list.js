@@ -48,9 +48,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.list = exports.eventsList = void 0;
 var fs_1 = __importDefault(require("fs"));
-var promises_1 = __importDefault(require("fs/promises"));
 var path_1 = __importDefault(require("path"));
 var cli_table3_1 = __importDefault(require("cli-table3"));
+var promises_1 = __importDefault(require("fs/promises"));
+var file_time_stamp_1 = require("../helpers/file-time-stamp");
 var colors = require("colors");
 function eventsList(program, glueStackPlugin) {
     program
@@ -75,6 +76,7 @@ function list(_glueStackPlugin, args) {
                             colors.brightGreen("Filepath"),
                             colors.brightGreen("Functions"),
                             colors.brightGreen("Webhooks"),
+                            colors.brightGreen("Modified on"),
                         ],
                     });
                     _a = true;
@@ -111,7 +113,7 @@ exports.list = list;
 function getEvents(eventPath, table, dbEvent) {
     var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var files, listData, _d, files_1, files_1_1, file, eventFilePath, isDir, _e, eventFilePath_1, data, allFunction, allWebhooks, e_1_1, error_1;
+        var files, listData, _d, files_1, files_1_1, file, eventFilePath, isDir, _e, eventFilePath_1, data, arrayOfObjects, lastModifiedDays, allFunction, allWebhooks, lastModified, e_1_1, error_1;
         var _f;
         return __generator(this, function (_g) {
             switch (_g.label) {
@@ -120,20 +122,20 @@ function getEvents(eventPath, table, dbEvent) {
                     files = _g.sent();
                     _g.label = 2;
                 case 2:
-                    _g.trys.push([2, 24, , 25]);
+                    _g.trys.push([2, 25, , 26]);
                     _g.label = 3;
                 case 3:
-                    _g.trys.push([3, 17, 18, 23]);
+                    _g.trys.push([3, 18, 19, 24]);
                     _d = true, files_1 = __asyncValues(files);
                     _g.label = 4;
                 case 4: return [4, files_1.next()];
                 case 5:
-                    if (!(files_1_1 = _g.sent(), _a = files_1_1.done, !_a)) return [3, 16];
+                    if (!(files_1_1 = _g.sent(), _a = files_1_1.done, !_a)) return [3, 17];
                     _c = files_1_1.value;
                     _d = false;
                     _g.label = 6;
                 case 6:
-                    _g.trys.push([6, , 14, 15]);
+                    _g.trys.push([6, , 15, 16]);
                     file = _c;
                     eventFilePath = void 0;
                     if (!dbEvent) {
@@ -151,11 +153,12 @@ function getEvents(eventPath, table, dbEvent) {
                     _g.label = 9;
                 case 9:
                     isDir = _e;
-                    if (!!isDir) return [3, 11];
+                    if (!!isDir) return [3, 12];
                     eventFilePath_1 = dbEvent
                         ? path_1.default.join(eventPath, file)
                         : path_1.default.join(process.cwd(), eventPath.slice(2), file);
                     data = require(eventFilePath_1);
+                    arrayOfObjects = data();
                     listData = {
                         fileName: dbEvent
                             ? eventFilePath_1.split("/").slice(-3).join("/")
@@ -164,8 +167,13 @@ function getEvents(eventPath, table, dbEvent) {
                             fun: [],
                             webhook: [],
                         },
+                        lastModified: "",
                     };
-                    return [4, data.map(function (events) {
+                    return [4, (0, file_time_stamp_1.timeStamp)(eventFilePath_1)];
+                case 10:
+                    lastModifiedDays = _g.sent();
+                    listData.lastModified = lastModifiedDays;
+                    return [4, arrayOfObjects.map(function (events) {
                             if (events.type === "function") {
                                 listData.event.fun.push(events.value);
                             }
@@ -173,44 +181,47 @@ function getEvents(eventPath, table, dbEvent) {
                                 listData.event.webhook.push(events.value);
                             }
                         })];
-                case 10:
+                case 11:
                     _g.sent();
                     allFunction = listData.event.fun.join("\n");
                     allWebhooks = listData.event.webhook.join("\n");
-                    table.push((_f = {}, _f[listData.fileName] = [allFunction, allWebhooks], _f));
-                    return [3, 13];
-                case 11: return [4, getEvents(eventFilePath, table, true)];
-                case 12:
+                    lastModified = listData.lastModified;
+                    table.push((_f = {},
+                        _f[listData.fileName] = [allFunction, allWebhooks, lastModified],
+                        _f));
+                    return [3, 14];
+                case 12: return [4, getEvents(eventFilePath, table, true)];
+                case 13:
                     _g.sent();
-                    _g.label = 13;
-                case 13: return [3, 15];
-                case 14:
+                    _g.label = 14;
+                case 14: return [3, 16];
+                case 15:
                     _d = true;
                     return [7];
-                case 15: return [3, 4];
-                case 16: return [3, 23];
-                case 17:
+                case 16: return [3, 4];
+                case 17: return [3, 24];
+                case 18:
                     e_1_1 = _g.sent();
                     e_1 = { error: e_1_1 };
-                    return [3, 23];
-                case 18:
-                    _g.trys.push([18, , 21, 22]);
-                    if (!(!_d && !_a && (_b = files_1.return))) return [3, 20];
-                    return [4, _b.call(files_1)];
+                    return [3, 24];
                 case 19:
+                    _g.trys.push([19, , 22, 23]);
+                    if (!(!_d && !_a && (_b = files_1.return))) return [3, 21];
+                    return [4, _b.call(files_1)];
+                case 20:
                     _g.sent();
-                    _g.label = 20;
-                case 20: return [3, 22];
-                case 21:
+                    _g.label = 21;
+                case 21: return [3, 23];
+                case 22:
                     if (e_1) throw e_1.error;
                     return [7];
-                case 22: return [7];
-                case 23: return [3, 25];
-                case 24:
+                case 23: return [7];
+                case 24: return [3, 26];
+                case 25:
                     error_1 = _g.sent();
                     console.log(error_1);
-                    return [3, 25];
-                case 25: return [2];
+                    return [3, 26];
+                case 26: return [2];
             }
         });
     });
@@ -221,7 +232,7 @@ function getFiles(filePath) {
             return [2, new Promise(function (resolve, reject) {
                     fs_1.default.readdir(filePath, function (err, files) {
                         if (err) {
-                            console.log("> No files found");
+                            console.log(colors.brightRed("> No files found!"));
                             process.exit(0);
                         }
                         return resolve(files);
@@ -257,5 +268,4 @@ function isDirectory(path) {
         });
     });
 }
-module.exports = { eventsList: eventsList };
 //# sourceMappingURL=event-list.js.map
