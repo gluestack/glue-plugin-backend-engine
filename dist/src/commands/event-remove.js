@@ -49,7 +49,7 @@ function eventRemove(program, glueStackPlugin) {
     program
         .command("events:remove")
         .option("--a, --app <app-name>", "Name of the event")
-        .option("--t, --table <table-name>", "Name of the table in database (table-name:event1,event2)")
+        .option("--t, --table <table-name>", "Name of the table in database (table-name:event-name)")
         .description("List the events with select option to delete selected events")
         .action(function (args) { return deleteEvents(glueStackPlugin, args); });
 }

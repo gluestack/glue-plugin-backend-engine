@@ -11,7 +11,7 @@ export function eventRemove(program: any, glueStackPlugin: GlueStackPlugin) {
 		.option("--a, --app <app-name>", "Name of the event")
 		.option(
 			"--t, --table <table-name>",
-			"Name of the table in database (table-name:event1,event2)"
+			"Name of the table in database (table-name:event-name)"
 		)
 		.description("List the events with select option to delete selected events")
 		.action((args: any) => deleteEvents(glueStackPlugin, args));
