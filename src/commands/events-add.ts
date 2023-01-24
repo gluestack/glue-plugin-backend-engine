@@ -20,6 +20,7 @@ export function eventsAdd(program: any, glueStackPlugin: GlueStackPlugin) {
 			"Name of the table in database (table-name:event1,event2)"
 		)
 		.option("--f, --function <function-name>", "Name of the function")
+		.option("--m, --method <method-name>", "Name of the method")
 		.option("--w, --webhook <webhook-url>", "Webhook URL")
 		.option("--a, --app <app-name>", "Name of the event")
 		.description("Create the events")
@@ -50,13 +51,17 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 			console.log(colors.brightRed("> provide either --table or --app"));
 			process.exit(0);
 
-		case args.hasOwnProperty("function"):
-			content = await createContent("function", args.function);
+		case args.hasOwnProperty("function") && args.hasOwnProperty("method"):
+			content = await createContent("function", args);
 			break;
 
 		case args.hasOwnProperty("webhook"):
 			content = await createContent("webhook", args.webhook);
 			break;
+
+		case args.hasOwnProperty('function') && !args.hasOwnProperty('method'):
+			console.log(colors.brightRed("> enter method name with function --m method-name"))
+			process.exit(0);
 	}
 
 	if (args.hasOwnProperty("table")) {
@@ -159,10 +164,10 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 	}
 }
 
-export async function createContent(type: string, value: string) {
+export async function createContent(type: string, value: any) {
 	return {
 		kind: "sync",
 		type: type,
-		value: value,
+		value: type === 'function' ? `${value.function}::${value.method}` : value.webhook,
 	};
 }
