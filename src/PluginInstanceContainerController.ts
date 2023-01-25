@@ -1,6 +1,6 @@
 import { PluginInstance } from "./PluginInstance";
 import IApp from "@gluestack/framework/types/app/interface/IApp";
-import IContainerController from "@gluestack/framework/types/plugin/interface/IContainerController";
+import IContainerController, { IRoutes } from "@gluestack/framework/types/plugin/interface/IContainerController";
 const { DockerodeHelper } = require("@gluestack/helpers");
 import GluestackEngine from "./core/GluestackEngine";
 import { IGlueEngine } from "./core/types/IGlueEngine";
@@ -91,7 +91,7 @@ export class PluginInstanceContainerController implements IContainerController {
     // do nothing
   }
 
-  getConfig(): any {}
+  getConfig(): any { }
 
   async up() {
     const app: IApp = this.app;
@@ -121,5 +121,20 @@ export class PluginInstanceContainerController implements IContainerController {
 
   async build() {
     // do nothing
+  }
+
+  async getRoutes(): Promise<IRoutes[]> {
+    const routes: IRoutes[] = [
+      { method: "GET", path: "/health-check" },
+      { method: "POST", path: "/actions/{action_name}" },
+      { method: "POST", path: "/events" },
+      { method: "POST", path: "/app/events" },
+      { method: "POST", path: "/client/invoke" },
+      { method: "POST", path: "/server/invoke" },
+      { method: "GET", path: "/glue/config" },
+      { method: "POST", path: "/queue/push" }
+    ];
+
+    return Promise.resolve(routes);
   }
 }

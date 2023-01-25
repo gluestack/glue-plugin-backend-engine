@@ -176,6 +176,24 @@ var PluginInstanceContainerController = (function () {
             });
         });
     };
+    PluginInstanceContainerController.prototype.getRoutes = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var routes;
+            return __generator(this, function (_a) {
+                routes = [
+                    { method: "GET", path: "/health-check" },
+                    { method: "POST", path: "/actions/{action_name}" },
+                    { method: "POST", path: "/events" },
+                    { method: "POST", path: "/app/events" },
+                    { method: "POST", path: "/client/invoke" },
+                    { method: "POST", path: "/server/invoke" },
+                    { method: "GET", path: "/glue/config" },
+                    { method: "POST", path: "/queue/push" }
+                ];
+                return [2, Promise.resolve(routes)];
+            });
+        });
+    };
     return PluginInstanceContainerController;
 }());
 exports.PluginInstanceContainerController = PluginInstanceContainerController;
