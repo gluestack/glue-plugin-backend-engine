@@ -100,7 +100,7 @@ var GluestackEvent = (function () {
                         exist = _g.sent();
                         if (!exist) {
                             console.log("> \"".concat(dirName, "\" directory does not exist in \"events\" directory. Skipping..."));
-                            return [2];
+                            return [2, paths];
                         }
                         return [4, (0, promises_1.readdir)(dirPath, {
                                 withFileTypes: true

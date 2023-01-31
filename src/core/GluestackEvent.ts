@@ -41,7 +41,7 @@ export default class GluestackEvent implements IGluestackEvent {
     const exist = await fileExists(dirPath);
     if (!exist) {
       console.log(`> "${dirName}" directory does not exist in "events" directory. Skipping...`);
-      return;
+      return paths;
     }
 
     const dirents = await readdir(dirPath, {

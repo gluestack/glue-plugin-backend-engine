@@ -146,11 +146,11 @@ var DockerCompose = (function () {
                             healthcheck: {
                                 test: [
                                     "CMD-SHELL",
-                                    "timeout 30s bash -c ':> /dev/tcp/127.0.0.1/".concat(port_number, "' || exit 1")
+                                    "timeout 1s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1"
                                 ],
-                                interval: '3s',
-                                timeout: '1s',
-                                retries: 10
+                                interval: '5s',
+                                timeout: '2s',
+                                retries: 20
                             }
                         };
                         if (postgres && postgres !== '') {
