@@ -8,12 +8,12 @@ const colors = require("colors");
 export function eventRemove(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
 		.command("event:remove")
-		.option("--a, --app <app-name>", "Name of the event")
+		.option("--a, --app <app-name>", "name of the event")
 		.option(
 			"--t, --table <table-name>",
-			"Name of the table in database (table-name:event-name)"
+			"name of the table in database (table-name:event-name)"
 		)
-		.description("List the events with select option to delete selected events")
+		.description("List the events with select option")
 		.action((args: any) => deleteEvents(glueStackPlugin, args));
 }
 
@@ -26,11 +26,11 @@ export async function deleteEvents(
 
 	switch (true) {
 		case "table" in args && "app" in args:
-			console.log(colors.brightRed("> provide either --table or --app"));
+			console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
 			process.exit(0);
 
 		case Object.entries(args).length === 0:
-			console.log(colors.brightRed("> missing --table or --app"))
+			console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
 			process.exit(0)
 
 		case args.hasOwnProperty('app'):
@@ -45,7 +45,7 @@ export async function deleteEvents(
 	}
 
 	if (!await fileExists(filePath)) {
-		console.log(colors.brightRed('> Event file missing!'));
+		console.log('error: event file missing!');
 		process.exit(0);
 	}
 
@@ -55,7 +55,7 @@ export async function deleteEvents(
 
 
 	if (arrayOfObjects.length <= 0) {
-		console.log(colors.brightRed('> Event file empty! Please add one and try again.'));
+		console.log('error: event file empty! Please add one and try again.');
 		process.exit(0);
 	}
 
@@ -83,7 +83,7 @@ export async function deleteEvents(
 				.map((choice: any) => JSON.parse(choice.name));
 
 			await writeFile(filePath, `module.exports = () => ${JSON.stringify(choices, null, 2)};`);
-			console.log(colors.brightGreen("> Successfully removed!"));
+			console.log("Successfully removed!");
 		}
 	}
 

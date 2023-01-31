@@ -55,7 +55,7 @@ var file_time_stamp_1 = require("../helpers/file-time-stamp");
 function cronsList(program, glueStackPlugin) {
     program
         .command("cron:list")
-        .description("List all crons")
+        .description("List all cron")
         .action(function () { return list(glueStackPlugin); });
 }
 exports.cronsList = cronsList;
@@ -77,13 +77,13 @@ function list(_glueStackPlugin) {
                     return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
                 case 1:
                     if (!(_f.sent())) {
-                        console.log(colors.brightRed("> Crons file missing!"));
+                        console.log("error: cron file missing!");
                         process.exit(0);
                     }
                     dataFilePath = path_1.default.join(process.cwd(), cronsFilePath.slice(2));
                     fileData = require(dataFilePath);
                     if (fileData.length <= 0) {
-                        console.log(colors.brightRed("> Crons file empty! Please add one and try again."));
+                        console.log("error: cron file empty! please add one and try again.\nyou can add cron \"node glue cron:add --s <schedule-value> --w <webhook-url> or --f <function-name>\"");
                         process.exit(0);
                     }
                     _f.label = 2;
@@ -128,7 +128,7 @@ function list(_glueStackPlugin) {
                     return [4, (0, file_time_stamp_1.timeStamp)(cronsFilePath)];
                 case 14:
                     lastModified = _f.sent();
-                    console.log(colors.yellow("Crons last updated: ".concat(lastModified)));
+                    console.log("Cron last updated: ".concat(lastModified));
                     return [2];
             }
         });

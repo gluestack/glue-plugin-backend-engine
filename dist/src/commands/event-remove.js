@@ -48,9 +48,9 @@ var colors = require("colors");
 function eventRemove(program, glueStackPlugin) {
     program
         .command("event:remove")
-        .option("--a, --app <app-name>", "Name of the event")
-        .option("--t, --table <table-name>", "Name of the table in database (table-name:event-name)")
-        .description("List the events with select option to delete selected events")
+        .option("--a, --app <app-name>", "name of the event")
+        .option("--t, --table <table-name>", "name of the table in database (table-name:event-name)")
+        .description("List the events with select option")
         .action(function (args) { return deleteEvents(glueStackPlugin, args); });
 }
 exports.eventRemove = eventRemove;
@@ -62,10 +62,10 @@ function deleteEvents(_glueStackPlugin, args) {
                 case 0:
                     switch (true) {
                         case "table" in args && "app" in args:
-                            console.log(colors.brightRed("> provide either --table or --app"));
+                            console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
                             process.exit(0);
                         case Object.entries(args).length === 0:
-                            console.log(colors.brightRed("> missing --table or --app"));
+                            console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
                             process.exit(0);
                         case args.hasOwnProperty('app'):
                             filePath = "./backend/events/app/".concat(args.app, ".js");
@@ -79,14 +79,14 @@ function deleteEvents(_glueStackPlugin, args) {
                     return [4, (0, file_exists_1.fileExists)(filePath)];
                 case 1:
                     if (!(_a.sent())) {
-                        console.log(colors.brightRed('> Event file missing!'));
+                        console.log('error: event file missing!');
                         process.exit(0);
                     }
                     dataFilePath = path_1.default.join(process.cwd(), filePath.slice(2));
                     fileData = require(dataFilePath);
                     arrayOfObjects = fileData();
                     if (arrayOfObjects.length <= 0) {
-                        console.log(colors.brightRed('> Event file empty! Please add one and try again.'));
+                        console.log('error: event file empty! Please add one and try again.');
                         process.exit(0);
                     }
                     choices = arrayOfObjects.map(function (obj, index) { return ({
@@ -115,7 +115,7 @@ function deleteEvents(_glueStackPlugin, args) {
                     return [4, (0, write_file_1.writeFile)(filePath, "module.exports = () => ".concat(JSON.stringify(choices, null, 2), ";"))];
                 case 4:
                     _a.sent();
-                    console.log(colors.brightGreen("> Successfully removed!"));
+                    console.log("Successfully removed!");
                     _a.label = 5;
                 case 5: return [2];
             }

@@ -49,13 +49,13 @@ export async function list(_glueStackPlugin: GlueStackPlugin, args: any) {
 
     case args.hasOwnProperty("app"):
       await getEvents(appEventPath, table, false);
-			await sortingArray(table);
+      await sortingArray(table);
       console.log(table.toString());
       break;
 
     case args.hasOwnProperty("database"):
       await getEvents(dbEventPath, table, false);
-			await sortingArray(table);
+      await sortingArray(table);
       console.log(table.toString());
       break;
   }
@@ -125,7 +125,7 @@ async function getFiles(filePath: string) {
   return new Promise((resolve, reject) => {
     fs.readdir(filePath, (err: Error, files: string[]) => {
       if (err) {
-        console.log(colors.brightRed("> No files found!"));
+        console.log("error: no files found!");
         process.exit(0);
       }
       return resolve(files);

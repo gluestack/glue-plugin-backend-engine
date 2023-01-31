@@ -241,7 +241,7 @@ function getFiles(filePath) {
             return [2, new Promise(function (resolve, reject) {
                     fs_1.default.readdir(filePath, function (err, files) {
                         if (err) {
-                            console.log(colors.brightRed("> No files found!"));
+                            console.log("error: no files found!");
                             process.exit(0);
                         }
                         return resolve(files);

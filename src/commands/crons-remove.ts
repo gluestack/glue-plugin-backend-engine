@@ -3,14 +3,13 @@ import { GlueStackPlugin } from "src";
 import { writeFile } from '../helpers/write-file';
 import { fileExists } from "../helpers/file-exists";
 
-const colors = require("colors");
 const { MultiSelect, confirm } = require('enquirer');
 
 export function cronsRemove(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
 		.command("cron:remove")
 		.description(
-			"List the crons jobs with select option to delete",
+			"List the cron jobs with select option",
 		)
 		.action(() => deleteEvents(glueStackPlugin));
 }
@@ -21,7 +20,7 @@ export async function deleteEvents(
 
 	const cronsFilePath = './backend/crons/crons.json';
 	if (!await fileExists(cronsFilePath)) {
-		console.log(colors.brightRed('> Crons file missing!'));
+		console.log('error: cron file missing!');
 		process.exit(0);
 	}
 
@@ -29,7 +28,7 @@ export async function deleteEvents(
 	const fileData = require(dataFilePath);
 
 	if (fileData.length <= 0) {
-		console.log(colors.brightRed('> Crons file empty! Please add one and try again.'));
+		console.log(`error: cron file empty! please add one and try again.\nyou can add cron "node glue cron:add --s <schedule-value> --w <webhook-url> or --f <function-name>"`);
 		process.exit(0);
 	}
 
@@ -57,7 +56,7 @@ export async function deleteEvents(
 				.map((choice: any) => JSON.parse(choice.name));
 
 			await writeFile(cronsFilePath, JSON.stringify(choices, null, 2));
-			console.log(colors.brightGreen("> Successfully removed!"));
+			console.log("Successfully removed!");
 		}
 	}
 

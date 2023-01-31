@@ -55,12 +55,12 @@ var colors = require("colors");
 function eventsAdd(program, glueStackPlugin) {
     program
         .command("event:add")
-        .option("--t, --table <table-name>", "Name of the table in database (table-name:event1,event2)")
-        .option("--f, --function <function-name>", "Name of the function")
-        .option("--m, --method <method-name>", "Name of the method in function")
-        .option("--w, --webhook <webhook-url>", "Webhook URL")
-        .option("--a, --app <app-name>", "Name of the event")
-        .description("Create the events")
+        .option("--t, --table <table-name:event>", "name of the table and event in database (table-name:event1,event2)")
+        .option("--f, --function <function-name>", "name of the function (required --m)")
+        .option("--m, --method <method-name>", "name of the method in function (required --f)")
+        .option("--w, --webhook <webhook-url>", "webhook URL")
+        .option("--a, --app <app-name>", "name of the event")
+        .description("Create the event")
         .action(function (args) {
         create(glueStackPlugin, args);
     });
@@ -69,18 +69,14 @@ exports.eventsAdd = eventsAdd;
 function create(_glueStackPlugin, args) {
     var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var fileContent, content, dbEventPath, appEventPath, _d, _e, folderName, events, _f, _g, _h, element, dbEventFilePath, data, arrayOfObjects, objExist, error_1, e_1_1, appEventFilePath, data, arrayOfObjects, objExist, error_2;
-        return __generator(this, function (_j) {
-            switch (_j.label) {
+        var fileContent, content, dbEventPath, appEventPath, _d, validEvents_1, _e, folderName, events, _i, _f, event_1, _g, _h, _j, element, dbEventFilePath, data, arrayOfObjects, objExist, error_1, e_1_1, appEventFilePath, data, arrayOfObjects, objExist, error_2;
+        return __generator(this, function (_k) {
+            switch (_k.label) {
                 case 0:
                     dbEventPath = "./backend/events/database";
                     appEventPath = "./backend/events/app";
                     if (!args.table && !args.app) {
-                        console.log(colors.brightRed("Please provide at least one of the following options: --table, --app"));
-                        process.exit(0);
-                    }
-                    if (!args.table && !args.function && !args.webhook && !args.app) {
-                        console.log(colors.brightRed("Please provide at least one of the following options: --table, --function, --webhook, --app"));
+                        console.log("error: option required you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
                         process.exit(0);
                     }
                     _d = true;
@@ -93,58 +89,66 @@ function create(_glueStackPlugin, args) {
                     }
                     return [3, 8];
                 case 1:
-                    console.log(colors.brightRed("> enter either --f function or --w webhook-url"));
+                    console.log("error: required one option you can add '--f <function-name>' or '--w <webhook-url>' add --help for more information");
                     process.exit(0);
-                    _j.label = 2;
+                    _k.label = 2;
                 case 2:
-                    console.log(colors.brightRed("> provide either --table or --app"));
+                    console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
                     process.exit(0);
-                    _j.label = 3;
+                    _k.label = 3;
                 case 3:
-                    console.log(colors.brightRed("> enter method name with function --m method-name"));
+                    console.log("error: required method name with function you can add '--m <method-name>' add --help for more information");
                     process.exit(0);
-                    _j.label = 4;
+                    _k.label = 4;
                 case 4: return [4, createContent("function", args)];
                 case 5:
-                    content = _j.sent();
+                    content = _k.sent();
                     return [3, 8];
                 case 6: return [4, createContent("webhook", args)];
                 case 7:
-                    content = _j.sent();
+                    content = _k.sent();
                     return [3, 8];
                 case 8:
                     if (!args.hasOwnProperty("table")) return [3, 28];
                     try {
+                        validEvents_1 = ['delete', 'update', 'insert'];
                         _e = args.table.split(":"), folderName = _e[0], events = _e.slice(1);
                         args.table = { folderName: folderName, events: events[0].split(",") };
+                        for (_i = 0, _f = args.table.events; _i < _f.length; _i++) {
+                            event_1 = _f[_i];
+                            if (!validEvents_1.includes(event_1)) {
+                                console.log("error: \"".concat(event_1, "\" is invalid! valid events are 'insert', 'update' and 'delete'."));
+                            }
+                        }
+                        args.table.events = args.table.events.filter(function (event) { return validEvents_1.includes(event); });
                     }
                     catch (error) {
-                        console.log(colors.brightRed("> Table input is not valid please run --help"));
+                        console.log("error: --table argument is invalid! valid format is '--t table-name:event-name' add --help for more information");
                         process.exit(0);
                     }
                     return [4, (0, create_folder_1.createFolder)("".concat(dbEventPath, "/").concat(args.table.folderName))];
                 case 9:
-                    _j.sent();
-                    _j.label = 10;
+                    _k.sent();
+                    _k.label = 10;
                 case 10:
-                    _j.trys.push([10, 22, 23, 28]);
-                    _f = true, _g = __asyncValues(args.table.events);
-                    _j.label = 11;
-                case 11: return [4, _g.next()];
+                    _k.trys.push([10, 22, 23, 28]);
+                    _g = true, _h = __asyncValues(args.table.events);
+                    _k.label = 11;
+                case 11: return [4, _h.next()];
                 case 12:
-                    if (!(_h = _j.sent(), _a = _h.done, !_a)) return [3, 21];
-                    _c = _h.value;
-                    _f = false;
-                    _j.label = 13;
+                    if (!(_j = _k.sent(), _a = _j.done, !_a)) return [3, 21];
+                    _c = _j.value;
+                    _g = false;
+                    _k.label = 13;
                 case 13:
-                    _j.trys.push([13, , 19, 20]);
+                    _k.trys.push([13, , 19, 20]);
                     element = _c;
-                    _j.label = 14;
+                    _k.label = 14;
                 case 14:
-                    _j.trys.push([14, 17, , 18]);
+                    _k.trys.push([14, 17, , 18]);
                     return [4, (0, file_exists_1.fileExists)("".concat(dbEventPath, "/").concat(args.table.folderName, "/").concat(element, ".js"))];
                 case 15:
-                    if (_j.sent()) {
+                    if (_k.sent()) {
                         dbEventFilePath = path_1.default.join(process.cwd(), dbEventPath.slice(2), "".concat(args.table.folderName, "/").concat(element, ".js"));
                         data = require(dbEventFilePath);
                         arrayOfObjects = data();
@@ -155,8 +159,8 @@ function create(_glueStackPlugin, args) {
                                     obj.value === content.value);
                             });
                             if (objExist) {
-                                console.log(colors.brightRed("> ".concat(content.type, " already exist!")));
-                                process.exit(0);
+                                console.log("".concat(content.type, " already exist in event \"").concat(element, "\"!"));
+                                return [3, 20];
                             }
                         }
                         arrayOfObjects.push(content);
@@ -167,30 +171,30 @@ function create(_glueStackPlugin, args) {
                     }
                     return [4, (0, write_file_1.writeFile)("".concat(dbEventPath, "/").concat(args.table.folderName, "/").concat(element, ".js"), fileContent)];
                 case 16:
-                    _j.sent();
-                    console.log(colors.brightGreen("> Successfully created!"));
+                    _k.sent();
+                    console.log("Successfully created event \"".concat(element, "\""));
                     return [3, 18];
                 case 17:
-                    error_1 = _j.sent();
+                    error_1 = _k.sent();
                     console.log(error_1);
                     return [3, 18];
                 case 18: return [3, 20];
                 case 19:
-                    _f = true;
+                    _g = true;
                     return [7];
                 case 20: return [3, 11];
                 case 21: return [3, 28];
                 case 22:
-                    e_1_1 = _j.sent();
+                    e_1_1 = _k.sent();
                     e_1 = { error: e_1_1 };
                     return [3, 28];
                 case 23:
-                    _j.trys.push([23, , 26, 27]);
-                    if (!(!_f && !_a && (_b = _g.return))) return [3, 25];
-                    return [4, _b.call(_g)];
+                    _k.trys.push([23, , 26, 27]);
+                    if (!(!_g && !_a && (_b = _h.return))) return [3, 25];
+                    return [4, _b.call(_h)];
                 case 24:
-                    _j.sent();
-                    _j.label = 25;
+                    _k.sent();
+                    _k.label = 25;
                 case 25: return [3, 27];
                 case 26:
                     if (e_1) throw e_1.error;
@@ -198,12 +202,12 @@ function create(_glueStackPlugin, args) {
                 case 27: return [7];
                 case 28:
                     if (!args.hasOwnProperty("app")) return [3, 33];
-                    _j.label = 29;
+                    _k.label = 29;
                 case 29:
-                    _j.trys.push([29, 32, , 33]);
+                    _k.trys.push([29, 32, , 33]);
                     return [4, (0, file_exists_1.fileExists)("".concat(appEventPath, "/").concat(args.app, ".js"))];
                 case 30:
-                    if (_j.sent()) {
+                    if (_k.sent()) {
                         appEventFilePath = path_1.default.join(process.cwd(), appEventPath.slice(2), args.app);
                         data = require(appEventFilePath);
                         arrayOfObjects = data();
@@ -214,7 +218,7 @@ function create(_glueStackPlugin, args) {
                                     obj.value === content.value);
                             });
                             if (objExist) {
-                                console.log(colors.brightRed("> ".concat(content.type, " already exist!")));
+                                console.log("".concat(content.type, " already exist in \"").concat(args.app, "\""));
                                 process.exit(0);
                             }
                         }
@@ -226,11 +230,11 @@ function create(_glueStackPlugin, args) {
                     }
                     return [4, (0, write_file_1.writeFile)("".concat(appEventPath, "/").concat(args.app, ".js"), fileContent)];
                 case 31:
-                    _j.sent();
-                    console.log(colors.brightGreen("> Successfully created!"));
+                    _k.sent();
+                    console.log("Successfully created event \"".concat(args.app, "\""));
                     return [3, 33];
                 case 32:
-                    error_2 = _j.sent();
+                    error_2 = _k.sent();
                     console.log(error_2);
                     return [3, 33];
                 case 33: return [2];

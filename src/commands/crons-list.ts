@@ -9,7 +9,7 @@ import { timeStamp } from "../helpers/file-time-stamp";
 export function cronsList(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
 		.command("cron:list")
-		.description("List all crons")
+		.description("List all cron")
 		.action(() => list(glueStackPlugin));
 }
 
@@ -23,7 +23,7 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 	});
 
 	if (!(await fileExists(cronsFilePath))) {
-		console.log(colors.brightRed("> Crons file missing!"));
+		console.log("error: cron file missing!");
 		process.exit(0);
 	}
 
@@ -31,7 +31,7 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 	const fileData = require(dataFilePath);
 
 	if (fileData.length <= 0) {
-		console.log(colors.brightRed("> Crons file empty! Please add one and try again."));
+		console.log(`error: cron file empty! please add one and try again.\nyou can add cron "node glue cron:add --s <schedule-value> --w <webhook-url> or --f <function-name>"`);
 		process.exit(0);
 	}
 
@@ -42,6 +42,6 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 
 	console.log(table.toString());
 
-	const lastModified = await timeStamp(cronsFilePath)
-	console.log(colors.yellow(`Crons last updated: ${lastModified}`))
+	const lastModified = await timeStamp(cronsFilePath);
+	console.log(`Cron last updated: ${lastModified}`);
 }

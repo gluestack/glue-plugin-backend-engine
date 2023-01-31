@@ -43,12 +43,11 @@ exports.deleteEvents = exports.cronsRemove = void 0;
 var path_1 = __importDefault(require("path"));
 var write_file_1 = require("../helpers/write-file");
 var file_exists_1 = require("../helpers/file-exists");
-var colors = require("colors");
 var _a = require('enquirer'), MultiSelect = _a.MultiSelect, confirm = _a.confirm;
 function cronsRemove(program, glueStackPlugin) {
     program
         .command("cron:remove")
-        .description("List the crons jobs with select option to delete")
+        .description("List the cron jobs with select option")
         .action(function () { return deleteEvents(glueStackPlugin); });
 }
 exports.cronsRemove = cronsRemove;
@@ -62,13 +61,13 @@ function deleteEvents(_glueStackPlugin) {
                     return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
                 case 1:
                     if (!(_a.sent())) {
-                        console.log(colors.brightRed('> Crons file missing!'));
+                        console.log('error: cron file missing!');
                         process.exit(0);
                     }
                     dataFilePath = path_1.default.join(process.cwd(), cronsFilePath.slice(2));
                     fileData = require(dataFilePath);
                     if (fileData.length <= 0) {
-                        console.log(colors.brightRed('> Crons file empty! Please add one and try again.'));
+                        console.log("error: cron file empty! please add one and try again.\nyou can add cron \"node glue cron:add --s <schedule-value> --w <webhook-url> or --f <function-name>\"");
                         process.exit(0);
                     }
                     choices = fileData.map(function (obj, index) { return ({
@@ -97,7 +96,7 @@ function deleteEvents(_glueStackPlugin) {
                     return [4, (0, write_file_1.writeFile)(cronsFilePath, JSON.stringify(choices, null, 2))];
                 case 4:
                     _a.sent();
-                    console.log(colors.brightGreen("> Successfully removed!"));
+                    console.log("Successfully removed!");
                     _a.label = 5;
                 case 5: return [2];
             }

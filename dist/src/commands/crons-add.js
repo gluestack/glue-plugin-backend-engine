@@ -71,21 +71,25 @@ var colors = require("colors");
 var cronsAdd = function (program, glueStackPlugin) {
     program
         .command("cron:add")
-        .option("--s, --schedule <special>", "schedule value")
-        .option("--m, --method <method-name>", "Name of the method")
-        .option("--f, --function <function-name>", "name of function")
+        .option("--s, --schedule <special>", "schedule value (for every minute '* * * * *')")
+        .option("--m, --method <method-name>", "name of the method (required --f)")
+        .option("--f, --function <function-name>", "name of function (required --m)")
         .option("--w, --webhook <webhook-url>", "webhook url")
-        .description("Create the crons")
+        .description("Create the cron")
         .action(function (args) { return create(glueStackPlugin, args); });
 };
 exports.cronsAdd = cronsAdd;
 function create(_glueStackPlugin, args) {
     return __awaiter(this, void 0, void 0, function () {
-        var fileContent, content, cronsPath, _a, isScheduleValid, cronsFilePath, data;
+        var fileContent, content, cronsPath, _a, isScheduleValid, cronsFilePath, data, objExist;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     cronsPath = "./backend/crons";
+                    if (!args.schedule) {
+                        console.log("error: option '--s' required you can add '--s <schedule-value>' add --help for more information\n\nexample: node glue cron:add --s '* * * * *'");
+                        process.exit();
+                    }
                     _a = true;
                     switch (_a) {
                         case "function" in args && "webhook" in args || !args.hasOwnProperty("function") && !args.hasOwnProperty("webhook"): return [3, 1];
@@ -95,11 +99,11 @@ function create(_glueStackPlugin, args) {
                     }
                     return [3, 7];
                 case 1:
-                    console.log(colors.brightRed("> enter either --f function or --w webhook-url"));
+                    console.log("error: required one option you can add '--f <function-name>' or '--w <webhook-url>' add --help for more information");
                     process.exit(0);
                     _b.label = 2;
                 case 2:
-                    console.log(colors.brightRed("> enter method name with function --m method-name"));
+                    console.log("error: required method name with function you can add '--m <method-name>' add --help for more information");
                     process.exit(0);
                     _b.label = 3;
                 case 3: return [4, createContent("function", args, args.schedule)];
@@ -115,7 +119,7 @@ function create(_glueStackPlugin, args) {
                         (args.hasOwnProperty("function") || args.hasOwnProperty("webhook")) &&
                         cron.validate(args.schedule);
                     if (!isScheduleValid) {
-                        console.log(colors.brightRed("> enter a valid schedule value in the format of '* * * * *'.\n\nexample: node glue crons:add --s '* * * * *'"));
+                        console.log("error: invalid format! valid format is --s '* * * * *'.\n\nexample: node glue cron:add --s '* * * * *'");
                         process.exit(0);
                     }
                     cronsFilePath = "".concat(cronsPath, "/crons.json");
@@ -123,6 +127,17 @@ function create(_glueStackPlugin, args) {
                 case 8:
                     if (_b.sent()) {
                         data = require(path_1.default.join(process.cwd(), cronsPath.slice(2), "crons"));
+                        if (data.length !== 0) {
+                            objExist = data.find(function (obj) {
+                                return (obj.schedule === content.schedule &&
+                                    obj.type === content.type &&
+                                    obj.value === content.value);
+                            });
+                            if (objExist) {
+                                console.log("schedule \"".concat(content.schedule, "\" of ").concat(content.type, " \"").concat(content.value, "\" already exist!"));
+                                process.exit();
+                            }
+                        }
                         data.push(content);
                         fileContent = JSON.stringify(data, null, 2);
                     }
@@ -132,7 +147,7 @@ function create(_glueStackPlugin, args) {
                     return [4, (0, write_file_1.writeFile)(cronsFilePath, fileContent)];
                 case 9:
                     _b.sent();
-                    console.log(colors.brightGreen("> Successfully created!"));
+                    console.log("Successfully created!");
                     return [2];
             }
         });

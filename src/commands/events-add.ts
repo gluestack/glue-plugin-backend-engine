@@ -16,14 +16,14 @@ export function eventsAdd(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
 		.command("event:add")
 		.option(
-			"--t, --table <table-name>",
-			"Name of the table in database (table-name:event1,event2)"
+			"--t, --table <table-name:event>",
+			"name of the table and event in database (table-name:event1,event2)"
 		)
-		.option("--f, --function <function-name>", "Name of the function")
-		.option("--m, --method <method-name>", "Name of the method in function")
-		.option("--w, --webhook <webhook-url>", "Webhook URL")
-		.option("--a, --app <app-name>", "Name of the event")
-		.description("Create the events")
+		.option("--f, --function <function-name>", "name of the function (required --m)")
+		.option("--m, --method <method-name>", "name of the method in function (required --f)")
+		.option("--w, --webhook <webhook-url>", "webhook URL")
+		.option("--a, --app <app-name>", "name of the event")
+		.description("Create the event")
 		.action((args: any) => {
 			create(glueStackPlugin, args);
 		});
@@ -36,30 +36,30 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 	const appEventPath = "./backend/events/app";
 
 	if (!args.table && !args.app) {
-		console.log(colors.brightRed(
-			"Please provide at least one of the following options: --table, --app"
-		));
+		console.log(
+			"error: option required you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information"
+		);
 		process.exit(0);
 	}
 
-	if (!args.table && !args.function && !args.webhook && !args.app) {
-		console.log(colors.brightRed(
-			"Please provide at least one of the following options: --table, --function, --webhook, --app"
-		));
-		process.exit(0);
-	}
+	// if (!args.table && !args.function && !args.webhook && !args.app) {
+	// 	console.log(
+	// 		"error: option required you can  --table, --function, --webhook, --app"
+	// 	);
+	// 	process.exit(0);
+	// }
 
 	switch (true) {
 		case "function" in args && "webhook" in args || !args.hasOwnProperty("function") && !args.hasOwnProperty("webhook"):
-			console.log(colors.brightRed("> enter either --f function or --w webhook-url"));
+			console.log("error: required one option you can add '--f <function-name>' or '--w <webhook-url>' add --help for more information");
 			process.exit(0);
 
 		case "table" in args && "app" in args:
-			console.log(colors.brightRed("> provide either --table or --app"));
+			console.log("error: required one option you can add '--t, <table-name:event>' or '--a, <app-name>' add --help for more information");
 			process.exit(0);
 
 		case args.hasOwnProperty('function') && !args.hasOwnProperty('method'):
-			console.log(colors.brightRed("> enter method name with function --m method-name"))
+			console.log("error: required method name with function you can add '--m <method-name>' add --help for more information");
 			process.exit(0);
 
 		case args.hasOwnProperty("function") && args.hasOwnProperty("method"):
@@ -73,10 +73,20 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 
 	if (args.hasOwnProperty("table")) {
 		try {
+			const validEvents = ['delete', 'update', 'insert'];
 			const [folderName, ...events] = args.table.split(":");
 			args.table = { folderName, events: events[0].split(",") };
+
+			for (const event of args.table.events) {
+				if (!validEvents.includes(event)) {
+					console.log(`error: "${event}" is invalid! valid events are 'insert', 'update' and 'delete'.`)
+				}
+			}
+
+			args.table.events = args.table.events.filter((event: string) => validEvents.includes(event));
+
 		} catch (error) {
-			console.log(colors.brightRed("> Table input is not valid please run --help"));
+			console.log("error: --table argument is invalid! valid format is '--t table-name:event-name' add --help for more information");
 			process.exit(0);
 		}
 
@@ -106,8 +116,8 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 						});
 
 						if (objExist) {
-							console.log(colors.brightRed(`> ${content.type} already exist!`));
-							process.exit(0);
+							console.log(`${content.type} already exist in event "${element}"!`);
+							continue;
 						}
 					}
 
@@ -125,7 +135,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 					`${dbEventPath}/${args.table.folderName}/${element}.js`,
 					fileContent
 				);
-				console.log(colors.brightGreen("> Successfully created!"));
+				console.log(`Successfully created event "${element}"`);
 			} catch (error) {
 				console.log(error);
 			}
@@ -153,7 +163,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 					});
 
 					if (objExist) {
-						console.log(colors.brightRed(`> ${content.type} already exist!`));
+						console.log(`${content.type} already exist in "${args.app}"`);
 						process.exit(0);
 					}
 				}
@@ -163,7 +173,7 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 				fileContent = `module.exports = () => [${JSON.stringify(content, null, 2)}];`;
 			}
 			await writeFile(`${appEventPath}/${args.app}.js`, fileContent);
-			console.log(colors.brightGreen("> Successfully created!"));
+			console.log(`Successfully created event "${args.app}"`);
 		} catch (error) {
 			console.log(error);
 		}
