@@ -40,7 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PluginInstanceContainerController = void 0;
-var DockerodeHelper = require("@gluestack/helpers").DockerodeHelper;
+var _a = require("@gluestack/helpers"), SpawnHelper = _a.SpawnHelper, DockerodeHelper = _a.DockerodeHelper;
 var GluestackEngine_1 = __importDefault(require("./core/GluestackEngine"));
 var PluginInstanceContainerController = (function () {
     function PluginInstanceContainerController(app, callerInstance) {
@@ -56,6 +56,9 @@ var PluginInstanceContainerController = (function () {
     };
     PluginInstanceContainerController.prototype.installScript = function () {
         return ["npm", "install"];
+    };
+    PluginInstanceContainerController.prototype.buildScript = function () {
+        return ["npm", "run", "build"];
     };
     PluginInstanceContainerController.prototype.runScript = function () {
     };
@@ -172,7 +175,15 @@ var PluginInstanceContainerController = (function () {
     PluginInstanceContainerController.prototype.build = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2];
+                switch (_a.label) {
+                    case 0: return [4, SpawnHelper.run(this.callerInstance.getInstallationPath(), this.installScript())];
+                    case 1:
+                        _a.sent();
+                        return [4, SpawnHelper.run(this.callerInstance.getInstallationPath(), this.buildScript())];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };

@@ -1,7 +1,7 @@
 import { PluginInstance } from "./PluginInstance";
 import IApp from "@gluestack/framework/types/app/interface/IApp";
 import IContainerController, { IRoutes } from "@gluestack/framework/types/plugin/interface/IContainerController";
-const { DockerodeHelper } = require("@gluestack/helpers");
+const { SpawnHelper, DockerodeHelper } = require("@gluestack/helpers");
 import GluestackEngine from "./core/GluestackEngine";
 import { IGlueEngine } from "./core/types/IGlueEngine";
 
@@ -28,6 +28,10 @@ export class PluginInstanceContainerController implements IContainerController {
 
   installScript() {
     return ["npm", "install"];
+  }
+
+  buildScript() {
+    return ["npm", "run", "build"];
   }
 
   runScript() {
@@ -120,7 +124,8 @@ export class PluginInstanceContainerController implements IContainerController {
   }
 
   async build() {
-    // do nothing
+    await SpawnHelper.run(this.callerInstance.getInstallationPath(), this.installScript());
+    await SpawnHelper.run(this.callerInstance.getInstallationPath(), this.buildScript());
   }
 
   async getRoutes(): Promise<IRoutes[]> {
