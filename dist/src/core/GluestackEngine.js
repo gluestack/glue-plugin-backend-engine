@@ -68,6 +68,7 @@ var replace_keyword_1 = require("../helpers/replace-keyword");
 var valid_glue_service_1 = require("../helpers/valid-glue-service");
 var remove_special_chars_1 = require("../helpers/remove-special-chars");
 var constants_1 = require("../configs/constants");
+var get_folders_1 = require("../helpers/get-folders");
 var GluestackEngine = (function () {
     function GluestackEngine(app, backendInstancePath) {
         this.engineExist = false;
@@ -403,15 +404,17 @@ var GluestackEngine = (function () {
                     case 0:
                         backendInstancePath = (0, GluestackConfig_1.getConfig)('backendInstancePath');
                         filepath = (0, path_1.join)(process.cwd(), backendInstancePath, 'engine/router');
-                        folders = process.cwd().split('/');
+                        return [4, (0, get_folders_1.getFolders)()];
+                    case 1:
+                        folders = _a.sent();
                         lastFolder = folders[folders.length - 1];
                         projectName = "".concat(lastFolder, "_").concat(backendInstancePath);
                         dockerCompose = new DockerCompose_1.default();
                         return [4, dockerCompose.start(projectName, filepath)];
-                    case 1:
+                    case 2:
                         _a.sent();
                         return [4, (0, wait_in_seconds_1.waitInSeconds)(2)];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [2];
                 }
@@ -426,12 +429,14 @@ var GluestackEngine = (function () {
                     case 0:
                         backendInstancePath = (0, GluestackConfig_1.getConfig)('backendInstancePath');
                         filepath = (0, path_1.join)(process.cwd(), backendInstancePath, 'engine/router');
-                        folders = process.cwd().split('/');
+                        return [4, (0, get_folders_1.getFolders)()];
+                    case 1:
+                        folders = _a.sent();
                         lastFolder = folders[folders.length - 1];
                         projectName = "".concat(lastFolder, "_").concat(backendInstancePath);
                         dockerCompose = new DockerCompose_1.default();
                         return [4, dockerCompose.stop(projectName, filepath)];
-                    case 1:
+                    case 2:
                         _a.sent();
                         return [2];
                 }

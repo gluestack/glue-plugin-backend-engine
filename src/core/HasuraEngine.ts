@@ -49,7 +49,8 @@ export default class HasuraEngine implements IHasuraEngine {
       '--skip-update-check'
     ], {
       cwd: filepath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell:true,
     });
   }
 
@@ -63,7 +64,8 @@ export default class HasuraEngine implements IHasuraEngine {
       '--skip-update-check'
     ], {
       cwd: filepath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell:true,
     });
   }
 
@@ -82,7 +84,8 @@ export default class HasuraEngine implements IHasuraEngine {
       '--skip-update-check'
     ], {
       cwd: filepath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell:true,
     });
   }
 

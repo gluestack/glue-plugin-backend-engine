@@ -22,6 +22,7 @@ import { backendPlugins, noDockerfiles } from "../configs/constants";
 
 import { IHasuraEngine } from "./types/IHasuraEngine";
 import { IGluestackCron } from "./types/IGluestackCron";
+import { getFolders } from "../helpers/get-folders";
 
 /**
  * Gluestack Engine
@@ -282,7 +283,7 @@ export default class GluestackEngine implements IGlueEngine {
     );
 
     // constructing project name for docker compose command
-    const folders = process.cwd().split('/');
+    const folders:any = await getFolders();
     const lastFolder = folders[folders.length - 1];
     const projectName = `${lastFolder}_${backendInstancePath}`;
 
@@ -306,7 +307,7 @@ export default class GluestackEngine implements IGlueEngine {
     );
 
     // constructing project name for docker compose command
-    const folders = process.cwd().split('/');
+    const folders = await getFolders();
     const lastFolder = folders[folders.length - 1];
     const projectName = `${lastFolder}_${backendInstancePath}`;
 

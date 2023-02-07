@@ -77,7 +77,8 @@ var HasuraEngine = (function () {
                                 '--skip-update-check'
                             ], {
                                 cwd: filepath,
-                                stdio: 'inherit'
+                                stdio: 'inherit',
+                                shell: true,
                             })];
                     case 1:
                         _a.sent();
@@ -99,7 +100,8 @@ var HasuraEngine = (function () {
                                 '--skip-update-check'
                             ], {
                                 cwd: filepath,
-                                stdio: 'inherit'
+                                stdio: 'inherit',
+                                shell: true,
                             })];
                     case 1:
                         _a.sent();
@@ -126,7 +128,8 @@ var HasuraEngine = (function () {
                                 '--skip-update-check'
                             ], {
                                 cwd: filepath,
-                                stdio: 'inherit'
+                                stdio: 'inherit',
+                                shell: true,
                             })];
                     case 2:
                         _a.sent();
