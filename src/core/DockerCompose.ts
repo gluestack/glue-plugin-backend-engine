@@ -182,7 +182,8 @@ export default class DockerCompose implements IDockerCompose {
       '-d'
     ], {
       cwd: filepath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell: true
     });
   }
 
@@ -195,7 +196,8 @@ export default class DockerCompose implements IDockerCompose {
       '--volumes'
     ], {
       cwd: filepath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      shell: true
     });
   }
 }

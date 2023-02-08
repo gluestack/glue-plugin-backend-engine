@@ -5,10 +5,10 @@ import { GlueStackPlugin } from "src";
 import { execute } from "../helpers/spawn";
 
 export function serviceAdd(program: any, glueStackPlugin: GlueStackPlugin) {
-	program
-		.command("service:add")
-		.description("Create the events")
-		.action((args: any) => runner(glueStackPlugin, args));
+  program
+    .command("service:add")
+    .description("Create the events")
+    .action((args: any) => runner(glueStackPlugin, args));
 }
 
 const selectPluginName = async (services: string[]) => {
@@ -51,6 +51,7 @@ const runner = async (glueStackPlugin: GlueStackPlugin, args: any) => {
     instanceName
   ], {
     cwd: process.cwd(),
-    stdio: 'inherit'
+    stdio: 'inherit',
+    shell: true
   });
 };

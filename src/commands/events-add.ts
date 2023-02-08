@@ -42,13 +42,6 @@ export async function create(_glueStackPlugin: GlueStackPlugin, args: any) {
 		process.exit(0);
 	}
 
-	// if (!args.table && !args.function && !args.webhook && !args.app) {
-	// 	console.log(
-	// 		"error: option required you can  --table, --function, --webhook, --app"
-	// 	);
-	// 	process.exit(0);
-	// }
-
 	switch (true) {
 		case "function" in args && "webhook" in args || !args.hasOwnProperty("function") && !args.hasOwnProperty("webhook"):
 			console.log("error: required one option you can add '--f <function-name>' or '--w <webhook-url>' add --help for more information");

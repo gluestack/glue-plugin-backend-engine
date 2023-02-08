@@ -97,7 +97,8 @@ var runner = function (glueStackPlugin, args) { return __awaiter(void 0, void 0,
                         instanceName
                     ], {
                         cwd: process.cwd(),
-                        stdio: 'inherit'
+                        stdio: 'inherit',
+                        shell: true
                     })];
             case 3:
                 _a.sent();

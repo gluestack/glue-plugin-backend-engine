@@ -243,7 +243,8 @@ var DockerCompose = (function () {
                             '-d'
                         ], {
                             cwd: filepath,
-                            stdio: 'inherit'
+                            stdio: 'inherit',
+                            shell: true
                         })];
                     case 1:
                         _a.sent();
@@ -264,7 +265,8 @@ var DockerCompose = (function () {
                             '--volumes'
                         ], {
                             cwd: filepath,
-                            stdio: 'inherit'
+                            stdio: 'inherit',
+                            shell: true
                         })];
                     case 1:
                         _a.sent();
