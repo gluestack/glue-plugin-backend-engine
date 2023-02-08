@@ -61,7 +61,7 @@ export default class NginxConf {
     data.forEach((routes: any) => {
       if (routes.hasOwnProperty('path')) {
         locations.push(setLocation(
-          routes.path, routes.proxy.instance, routes.proxy.path, routes.host, routes.size_in_mb, routes.host_scheme 
+          routes.path, routes.proxy.instance, routes.proxy.path, routes.host, routes.size_in_mb, routes.host_scheme, routes.read_timeout 
         ));
       }
     });

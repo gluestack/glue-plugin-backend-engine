@@ -44,7 +44,14 @@ export const setLocation = (
   host?: string,
   size_in_mb?: number,
   host_scheme?: string,
-): string => `
+  read_timeout?: number,
+): string => {
+  const proxy_read_timeout = `${
+    read_timeout ? `      proxy_read_timeout ${read_timeout}s;
+` : ""
+  }`;
+
+  return `
     location ${path.replace('(.*)', '')} {
       rewrite ^${path} ${proxy_path} break;
 
@@ -54,7 +61,7 @@ export const setLocation = (
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
       proxy_cache_bypass $http_upgrade;
-
+${proxy_read_timeout}
       proxy_set_header Host ${host || "$host"};
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -62,3 +69,4 @@ export const setLocation = (
 
       proxy_pass ${host_scheme || "http"}://${proxy_instance};
     }`;
+};

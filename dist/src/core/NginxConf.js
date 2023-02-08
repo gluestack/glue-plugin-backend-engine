@@ -92,7 +92,7 @@ var NginxConf = (function () {
                 data = this.data;
                 data.forEach(function (routes) {
                     if (routes.hasOwnProperty('path')) {
-                        locations.push((0, nginx_literals_1.setLocation)(routes.path, routes.proxy.instance, routes.proxy.path, routes.host, routes.size_in_mb, routes.host_scheme));
+                        locations.push((0, nginx_literals_1.setLocation)(routes.path, routes.proxy.instance, routes.proxy.path, routes.host, routes.size_in_mb, routes.host_scheme, routes.read_timeout));
                     }
                 });
                 return [2, Promise.resolve(nginx_literals_1.startsWith + (0, nginx_literals_1.setServer)(locations) + nginx_literals_1.endsWith)];
