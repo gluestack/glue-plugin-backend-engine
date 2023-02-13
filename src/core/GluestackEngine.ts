@@ -154,7 +154,7 @@ export default class GluestackEngine implements IGlueEngine {
   }
 
   // Collects all the stateless plugins and their dockerfiles
-  async collectPlugins (
+  async collectPlugins(
     pluginType: 'stateless' | 'stateful' = 'stateless',
     status: 'up' | 'down' = 'up'
   ): Promise<void> {
@@ -234,6 +234,13 @@ export default class GluestackEngine implements IGlueEngine {
 
         // store postgres plugin's instance name
         if (details.name === '@gluestack/glue-plugin-postgres') {
+
+          const { instance_object: instance } = details;
+          const dbConfig: any = await instance.gluePluginStore.get('db_config');
+          if (dbConfig.external && dbConfig.external === true) {
+            setConfig('isPostgresExternal', 1);
+          }
+
           setConfig('postgresInstancePath', details.instance);
         }
 
@@ -269,6 +276,11 @@ export default class GluestackEngine implements IGlueEngine {
     for await (const plugin of plugins) {
       // If and only if the instance is postgres plugin
       if (plugin.name === '@gluestack/glue-plugin-postgres') {
+        const isPostgresExternal: number = getConfig('isPostgresExternal');
+        if (isPostgresExternal === 1) {
+          continue;
+        }
+
         dockerCompose.addPostgres(plugin);
         continue;
       }
@@ -304,7 +316,7 @@ export default class GluestackEngine implements IGlueEngine {
     );
 
     // constructing project name for docker compose command
-    const folders:any = await getFolders();
+    const folders: any = await getFolders();
     const lastFolder = folders[folders.length - 1];
     const projectName = `${lastFolder}_${backendInstancePath}`;
 

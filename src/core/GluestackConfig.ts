@@ -9,6 +9,8 @@ export const config: any = {
 
   postgresConnectionString: '',
 
+  isPostgresExternal: 0,
+
   authInstancePath: '',
 
   backendInstancePath: '',
@@ -44,7 +46,7 @@ export const prepareConfigJSON = async (newContent: any): Promise<void> => {
     content = JSON.parse(content.toString());
   }
 
-  content = {...content, ...newContent};
+  content = { ...content, ...newContent };
 
   await writeFile(filepath, JSON.stringify(content, null, 2));
 };

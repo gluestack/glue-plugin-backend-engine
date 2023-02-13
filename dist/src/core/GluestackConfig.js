@@ -55,6 +55,7 @@ var write_file_1 = require("../helpers/write-file");
 exports.config = {
     postgresInstancePath: '',
     postgresConnectionString: '',
+    isPostgresExternal: 0,
     authInstancePath: '',
     backendInstancePath: '',
     engineInstancePath: '',

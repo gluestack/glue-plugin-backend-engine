@@ -79,6 +79,7 @@ export default class DockerCompose implements IDockerCompose {
   public async addHasura(plugin: IStatelessPlugin, postgres: string) {
     const instance: any = plugin.instance_object;
     const port_number = await instance.gluePluginStore.get('port_number');
+    const isPostgresExternal = getConfig('isPostgresExternal');
 
     const hasura: IService = {
       container_name: plugin.instance,
@@ -105,7 +106,7 @@ export default class DockerCompose implements IDockerCompose {
       }
     };
 
-    if (postgres && postgres !== '') {
+    if (postgres && postgres !== '' && isPostgresExternal === 0) {
       hasura.depends_on = {};
       hasura.depends_on[`${postgres}`] = {
         condition: 'service_healthy'

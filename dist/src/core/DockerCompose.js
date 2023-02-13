@@ -122,7 +122,7 @@ var DockerCompose = (function () {
     };
     DockerCompose.prototype.addHasura = function (plugin, postgres) {
         return __awaiter(this, void 0, void 0, function () {
-            var instance, port_number, hasura;
+            var instance, port_number, isPostgresExternal, hasura;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -130,6 +130,7 @@ var DockerCompose = (function () {
                         return [4, instance.gluePluginStore.get('port_number')];
                     case 1:
                         port_number = _a.sent();
+                        isPostgresExternal = (0, GluestackConfig_1.getConfig)('isPostgresExternal');
                         hasura = {
                             container_name: plugin.instance,
                             restart: 'always',
@@ -153,7 +154,7 @@ var DockerCompose = (function () {
                                 retries: 20
                             }
                         };
-                        if (postgres && postgres !== '') {
+                        if (postgres && postgres !== '' && isPostgresExternal === 0) {
                             hasura.depends_on = {};
                             hasura.depends_on["".concat(postgres)] = {
                                 condition: 'service_healthy'
