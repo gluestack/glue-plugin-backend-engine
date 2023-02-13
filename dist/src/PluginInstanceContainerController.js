@@ -174,24 +174,41 @@ var PluginInstanceContainerController = (function () {
     };
     PluginInstanceContainerController.prototype.build = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var app, engine, err_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var app, engine, err_2, _a, _b, _c, _d, _e, _f, _g, _h;
+            return __generator(this, function (_j) {
+                switch (_j.label) {
                     case 0:
                         app = this.app;
-                        _a.label = 1;
+                        _j.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _j.trys.push([1, 3, , 4]);
                         engine = new GluestackEngine_1.default(app, 'backend');
                         return [4, engine.build()];
                     case 2:
-                        _a.sent();
+                        _j.sent();
                         return [3, 4];
                     case 3:
-                        err_2 = _a.sent();
+                        err_2 = _j.sent();
                         console.log('>> err', err_2);
                         return [3, 4];
-                    case 4: return [2];
+                    case 4:
+                        _b = (_a = console).log;
+                        _d = (_c = "".concat(this.callerInstance.getName(), ": Running ")).concat;
+                        return [4, this.installScript()];
+                    case 5:
+                        _b.apply(_a, [_d.apply(_c, [(_j.sent()).join(' ')])]);
+                        return [4, SpawnHelper.run(this.callerInstance.getInstallationPath(), this.installScript())];
+                    case 6:
+                        _j.sent();
+                        _f = (_e = console).log;
+                        _h = (_g = "".concat(this.callerInstance.getName(), ": Running ")).concat;
+                        return [4, this.buildScript()];
+                    case 7:
+                        _f.apply(_e, [_h.apply(_g, [(_j.sent()).join(' ')])]);
+                        return [4, SpawnHelper.run(this.callerInstance.getInstallationPath(), this.buildScript())];
+                    case 8:
+                        _j.sent();
+                        return [2];
                 }
             });
         });

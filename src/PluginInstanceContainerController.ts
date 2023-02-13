@@ -132,6 +132,19 @@ export class PluginInstanceContainerController implements IContainerController {
     } catch (err) {
       console.log('>> err', err);
     }
+
+    console.log(
+      `${this.callerInstance.getName()}: Running ${(await this.installScript()).join(
+        ' '
+      )}`
+    );
+    await SpawnHelper.run(this.callerInstance.getInstallationPath(), this.installScript());
+    console.log(
+      `${this.callerInstance.getName()}: Running ${(await this.buildScript()).join(
+        ' '
+      )}`
+    );
+    await SpawnHelper.run(this.callerInstance.getInstallationPath(), this.buildScript());
   }
 
   async getRoutes(): Promise<IRoutes[]> {
