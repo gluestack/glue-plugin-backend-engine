@@ -99,15 +99,15 @@ export class GlueStackPlugin implements IPlugin, IManagesInstances, ILifeCycle {
 
       // Adds crons directory
       await addMainCron(engineInstance);
+
+      // update package.json'S name index with the new instance name
+      const pluginPackage = `${engineInstance.getInstallationPath()}/package.json`;
+      await reWriteFile(pluginPackage, instanceName, 'INSTANCENAME');
+
+      // update root package.json's workspaces with the new instance name
+      const rootPackage = `${process.cwd()}/package.json`;
+      await updateWorkspaces(rootPackage, engineInstance.getInstallationPath());
     }
-
-    // update package.json'S name index with the new instance name
-    const pluginPackage = `${engineInstance.getInstallationPath()}/package.json`;
-    await reWriteFile(pluginPackage, instanceName, 'INSTANCENAME');
-
-    // update root package.json's workspaces with the new instance name
-    const rootPackage = `${process.cwd()}/package.json`;
-    await updateWorkspaces(rootPackage, engineInstance.getInstallationPath());
   }
 
   async checkAlreadyInstalled() {
