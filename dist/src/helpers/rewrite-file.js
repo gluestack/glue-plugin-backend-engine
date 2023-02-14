@@ -35,47 +35,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addMainRouter = void 0;
-var path_1 = require("path");
-var write_file_1 = require("./write-file");
-var file_exists_1 = require("./file-exists");
-var construct = function (backendInstance, path) { return __awaiter(void 0, void 0, void 0, function () {
-    var content;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                content = "module.exports = () => [\n  {\n    \"path\": \"/".concat(backendInstance, "\",\n    \"proxy\": {\n      \"path\": \"/\"\n    }\n  }\n];\n");
-                return [4, (0, write_file_1.writeFile)(path, content)];
-            case 1:
-                _a.sent();
-                return [2];
-        }
-    });
-}); };
-function addMainRouter(engineInstance) {
-    return __awaiter(this, void 0, void 0, function () {
-        var installationPath, folders, projectName, path, exist;
+exports.reWriteFile = void 0;
+var fs_1 = __importDefault(require("fs"));
+var util_1 = __importDefault(require("util"));
+var readFile = util_1.default.promisify(fs_1.default.readFile);
+var writeFile = util_1.default.promisify(fs_1.default.writeFile);
+var reWriteFile = function (filePath, instanceName, defaultVar) {
+    if (defaultVar === void 0) { defaultVar = 'services'; }
+    return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    installationPath = engineInstance.getInstallationPath();
-                    folders = installationPath.split("/");
-                    projectName = folders[folders.length - 1];
-                    path = (0, path_1.join)(installationPath, '..', 'router.js');
-                    return [4, (0, file_exists_1.fileExists)(path)];
-                case 1:
-                    exist = _a.sent();
-                    if (!!exist) return [3, 3];
-                    return [4, construct('backend', path)];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3: return [2, Promise.resolve('done')];
-            }
+            return [2, new Promise(function (resolve, reject) { return __awaiter(void 0, void 0, void 0, function () {
+                    var data, err_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 3, , 4]);
+                                return [4, readFile(filePath, "utf8")];
+                            case 1:
+                                data = _a.sent();
+                                data = data.replaceAll(defaultVar, instanceName);
+                                return [4, writeFile(filePath, data)];
+                            case 2:
+                                _a.sent();
+                                resolve('done');
+                                return [3, 4];
+                            case 3:
+                                err_1 = _a.sent();
+                                reject(err_1);
+                                return [3, 4];
+                            case 4: return [2];
+                        }
+                    });
+                }); })];
         });
     });
-}
-exports.addMainRouter = addMainRouter;
-;
-//# sourceMappingURL=add-main-router.js.map
+};
+exports.reWriteFile = reWriteFile;
+//# sourceMappingURL=rewrite-file.js.map

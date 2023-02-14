@@ -6,9 +6,6 @@ import { PluginInstance } from "../PluginInstance";
 const construct = async (backendInstance: string, path: string): Promise<void> => {
   const content: string = `module.exports = () => [
   {
-    "server_name": "your-app-name"
-  },
-  {
     "path": "/${backendInstance}",
     "proxy": {
       "path": "/"
