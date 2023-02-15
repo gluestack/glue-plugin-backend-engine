@@ -1,12 +1,10 @@
 import { GlueStackPlugin } from "src";
 
 import path from "path";
-// import { readdir } from "fs";
-import Table from "cli-table3";
 import { lstat, readdir } from "fs/promises";
 import { timeStamp } from "../helpers/file-time-stamp";
 
-const colors = require("colors");
+const { ConsoleTable } = require("@gluestack/helpers")
 
 interface listObject {
   fileName: string;
@@ -31,33 +29,33 @@ const list = async (_glueStackPlugin: GlueStackPlugin, args: any) => {
   const dbEventPath = "./backend/events/database";
   const appEventPath = "./backend/events/app";
 
-  let table = new Table({
-    head: [
-      colors.brightGreen("Filepath"),
-      colors.brightGreen("Functions"),
-      colors.brightGreen("Webhooks"),
-      colors.brightGreen("Modified on"),
-    ],
-  });
+  const head: string[] = [
+    "Filepath",
+    "Functions",
+    "Webhooks",
+    "Modified on",
+  ]
+
+  const rows: any = [];
 
   switch (true) {
     case args.hasOwnProperty("all") || Object.entries(args).length === 0:
-      await getEvents(appEventPath, table, false);
-      await getEvents(dbEventPath, table, false);
-      await sortingArray(table);
-      console.log(table.toString());
+      await getEvents(appEventPath, rows, false);
+      await getEvents(dbEventPath, rows, false);
+      await sortingArray(rows);
+      ConsoleTable.print(head, rows);
       break;
 
     case args.hasOwnProperty("app"):
-      await getEvents(appEventPath, table, false);
-      await sortingArray(table);
-      console.log(table.toString());
+      await getEvents(appEventPath, rows, false);
+      await sortingArray(rows);
+      ConsoleTable.print(head, rows);
       break;
 
     case args.hasOwnProperty("database"):
-      await getEvents(dbEventPath, table, false);
-      await sortingArray(table);
-      console.log(table.toString());
+      await getEvents(dbEventPath, rows, false);
+      await sortingArray(rows);
+      ConsoleTable.print(head, rows);
       break;
   }
 };
@@ -128,9 +126,11 @@ const getFiles = async (filePath: string) => {
 };
 
 const sortingArray = async (table: any) => {
-  table.sort(async (a: Table, b: Table) => {
+  table.sort(async (a: any, b: any) => {
     // get the timing value of each object
+    //@ts-ignore
     let timingA = Object.values(a)[0][2];
+    //@ts-ignore
     let timingB = Object.values(b)[0][2];
 
     // check if string not containing a number

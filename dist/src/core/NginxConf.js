@@ -38,8 +38,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = require("path");
 var fs_1 = require("fs");
-var file_exists_1 = require("../helpers/file-exists");
-var create_folder_1 = require("../helpers/create-folder");
+var fileExists = require("@gluestack/helpers").fileExists;
+var createFolder = require("@gluestack/helpers").createFolder;
 var nginx_literals_1 = require("../helpers/nginx-literals");
 var GluestackConfig_1 = require("./GluestackConfig");
 var NginxConf = (function () {
@@ -78,10 +78,10 @@ var NginxConf = (function () {
                     case 1:
                         conf = _a.sent();
                         path = (0, path_1.join)(process.cwd(), 'meta/router/prod');
-                        return [4, (0, file_exists_1.fileExists)(path)];
+                        return [4, fileExists(path)];
                     case 2:
                         if (!!(_a.sent())) return [3, 4];
-                        return [4, (0, create_folder_1.createFolder)(path)];
+                        return [4, createFolder(path)];
                     case 3:
                         _a.sent();
                         _a.label = 4;
@@ -104,7 +104,7 @@ var NginxConf = (function () {
                 switch (_a.label) {
                     case 0:
                         data = this.data;
-                        return [4, (0, file_exists_1.fileExists)(string)];
+                        return [4, fileExists(string)];
                     case 1:
                         exist = _a.sent();
                         if (!exist)

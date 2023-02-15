@@ -1,7 +1,9 @@
 import { join } from 'path';
 import { writeFileSync } from 'fs';
-import { fileExists } from '../helpers/file-exists';
-import { createFolder } from '../helpers/create-folder';
+
+const { fileExists } = require("@gluestack/helpers");
+const { createFolder } = require("@gluestack/helpers");
+
 import {
   endsWith, startsWith, setServer, setLocation
 } from '../helpers/nginx-literals';

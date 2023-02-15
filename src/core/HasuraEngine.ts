@@ -2,9 +2,10 @@ import { extname, join } from "path";
 import { readFile, readdir } from "node:fs/promises";
 
 import { execute } from "../helpers/spawn";
-import { getFiles } from "../helpers/get-files";
-import { fileExists } from "../helpers/file-exists";
-import { removeSpecialChars } from "../helpers/remove-special-chars";
+const { getFiles } = require("@gluestack/helpers");
+const { fileExists } = require("@gluestack/helpers");
+const { removeSpecialChars } = require("@gluestack/helpers");
+
 
 import { IStatelessPlugin } from "./types/IStatelessPlugin";
 import { IAction, IHasuraEngine } from "./types/IHasuraEngine";
@@ -51,7 +52,7 @@ export default class HasuraEngine implements IHasuraEngine {
     ], {
       cwd: filepath,
       stdio: 'inherit',
-      shell:true,
+      shell: true,
     });
   }
 
@@ -66,7 +67,7 @@ export default class HasuraEngine implements IHasuraEngine {
     ], {
       cwd: filepath,
       stdio: 'inherit',
-      shell:true,
+      shell: true,
     });
   }
 
@@ -86,7 +87,7 @@ export default class HasuraEngine implements IHasuraEngine {
     ], {
       cwd: filepath,
       stdio: 'inherit',
-      shell:true,
+      shell: true,
     });
   }
 
@@ -114,7 +115,7 @@ export default class HasuraEngine implements IHasuraEngine {
     ], {
       cwd: filepath,
       stdio: 'inherit',
-      shell:true,
+      shell: true,
     });
   }
 
@@ -178,7 +179,7 @@ export default class HasuraEngine implements IHasuraEngine {
     console.log('> Applying all tracks into hasura engine...');
 
     // Scan & read all the json files in the tracks folder
-    const dirents = await readdir(tracksPath, {withFileTypes: true});
+    const dirents = await readdir(tracksPath, { withFileTypes: true });
     for await (const dirent of dirents) {
       if (dirent.isFile() && extname(dirent.name).toLowerCase() === '.json') {
         const trackPath: string = join(tracksPath, dirent.name);
@@ -196,7 +197,7 @@ export default class HasuraEngine implements IHasuraEngine {
   }
 
   // Scan all the actions files and prepares the actions array
-  private async scanActions(): Promise<void>  {
+  private async scanActions(): Promise<void> {
     for await (const plugin of this.actionPlugins) {
       const functionsDirectory: string = join(plugin.path, 'functions');
 

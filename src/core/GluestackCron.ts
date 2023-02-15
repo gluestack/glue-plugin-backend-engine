@@ -5,8 +5,8 @@ import * as cron from 'node-cron';
 
 import { ICronObject, IGluestackCron } from './types/IGluestackCron';
 
-import { fileExists } from '../helpers/file-exists';
-import { getDirectories } from '../helpers/get-directories';
+const { fileExists } = require("@gluestack/helpers");
+const { getDirectories } = require("@gluestack/helpers");
 import { getConfig, prepareConfigJSON } from './GluestackConfig';
 
 export default class GluestackCron implements IGluestackCron {
@@ -46,7 +46,7 @@ export default class GluestackCron implements IGluestackCron {
 
       if (
         !schedule || !type || !value
-          || !cron.validate(schedule)
+        || !cron.validate(schedule)
       ) {
         console.log(`> Found an invalid schedule. Skipping...`);
         continue;
@@ -86,6 +86,6 @@ export default class GluestackCron implements IGluestackCron {
     await this.collect();
 
     // prepares the cron jobs
-    await prepareConfigJSON({crons: this.collection});
+    await prepareConfigJSON({ crons: this.collection });
   }
 }

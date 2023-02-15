@@ -47,11 +47,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.list = exports.cronList = void 0;
-var colors = require("colors");
+var fileExists = require("@gluestack/helpers").fileExists;
 var path_1 = __importDefault(require("path"));
-var cli_table3_1 = __importDefault(require("cli-table3"));
-var file_exists_1 = require("../helpers/file-exists");
 var file_time_stamp_1 = require("../helpers/file-time-stamp");
+var ConsoleTable = require("@gluestack/helpers").ConsoleTable;
 function cronList(program, glueStackPlugin) {
     program
         .command("cron:list")
@@ -62,19 +61,18 @@ exports.cronList = cronList;
 function list(_glueStackPlugin) {
     var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
-        var cronsFilePath, table, dataFilePath, fileData, _d, fileData_1, fileData_1_1, data, run, e_1_1, lastModified;
+        var cronsFilePath, head, rows, dataFilePath, fileData, _d, fileData_1, fileData_1_1, data, run, e_1_1, lastModified;
         var _e;
         return __generator(this, function (_f) {
             switch (_f.label) {
                 case 0:
                     cronsFilePath = "./backend/crons/crons.json";
-                    table = new cli_table3_1.default({
-                        head: [
-                            colors.brightGreen("Schedule"),
-                            colors.brightGreen("Run"),
-                        ],
-                    });
-                    return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
+                    head = [
+                        "Schedule",
+                        "Run",
+                    ];
+                    rows = [];
+                    return [4, fileExists(cronsFilePath)];
                 case 1:
                     if (!(_f.sent())) {
                         console.log("> Error: cron file missing!");
@@ -99,7 +97,7 @@ function list(_glueStackPlugin) {
                     try {
                         data = _c;
                         run = data.type === 'function' ? "function() [".concat(data.value, "]") : "webhook-url [".concat(data.value, "]");
-                        table.push((_e = {}, _e[data.schedule] = [run], _e));
+                        rows.push((_e = {}, _e[data.schedule] = [run], _e));
                     }
                     finally {
                         _d = true;
@@ -124,7 +122,7 @@ function list(_glueStackPlugin) {
                     return [7];
                 case 12: return [7];
                 case 13:
-                    console.log(table.toString());
+                    ConsoleTable.print(head, rows);
                     return [4, (0, file_time_stamp_1.timeStamp)(cronsFilePath)];
                 case 14:
                     lastModified = _f.sent();

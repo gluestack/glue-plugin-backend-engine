@@ -63,11 +63,11 @@ var GluestackConfig_1 = require("./GluestackConfig");
 var path_1 = require("path");
 var lodash_1 = require("lodash");
 var constants_1 = require("../configs/constants");
-var write_file_1 = require("../helpers/write-file");
-var get_folders_1 = require("../helpers/get-folders");
+var writeFile = require("@gluestack/helpers").writeFile;
+var removeSpecialChars = require("@gluestack/helpers").removeSpecialChars;
+var getOSFolders = require("@gluestack/helpers").getOSFolders;
 var wait_in_seconds_1 = require("../helpers/wait-in-seconds");
 var replace_keyword_1 = require("../helpers/replace-keyword");
-var remove_special_chars_1 = require("../helpers/remove-special-chars");
 var valid_glue_service_1 = require("../helpers/valid-glue-service");
 var services = require("@gluestack/framework/constants/services");
 var GluestackEngine = (function () {
@@ -440,7 +440,7 @@ var GluestackEngine = (function () {
                     case 0:
                         backendInstancePath = (0, GluestackConfig_1.getConfig)('backendInstancePath');
                         filepath = (0, path_1.join)(process.cwd(), backendInstancePath, 'engine/router');
-                        return [4, (0, get_folders_1.getFolders)()];
+                        return [4, getOSFolders()];
                     case 1:
                         folders = _a.sent();
                         lastFolder = folders[folders.length - 1];
@@ -465,7 +465,7 @@ var GluestackEngine = (function () {
                     case 0:
                         backendInstancePath = (0, GluestackConfig_1.getConfig)('backendInstancePath');
                         filepath = (0, path_1.join)(process.cwd(), backendInstancePath, 'engine/router');
-                        return [4, (0, get_folders_1.getFolders)()];
+                        return [4, getOSFolders()];
                     case 1:
                         folders = _a.sent();
                         lastFolder = folders[folders.length - 1];
@@ -486,10 +486,10 @@ var GluestackEngine = (function () {
                 switch (_a.label) {
                     case 0:
                         dockerfile = (0, path_1.join)(process.cwd(), 'node_modules', instance.callerPlugin.getName(), 'src/assets/Dockerfile');
-                        return [4, (0, replace_keyword_1.replaceKeyword)(dockerfile, (0, remove_special_chars_1.removeSpecialChars)(instance.getName()), '{APP_ID}')];
+                        return [4, (0, replace_keyword_1.replaceKeyword)(dockerfile, removeSpecialChars(instance.getName()), '{APP_ID}')];
                     case 1:
                         context = _a.sent();
-                        return [4, (0, write_file_1.writeFile)((0, path_1.join)(details.path, 'Dockerfile'), context)];
+                        return [4, writeFile((0, path_1.join)(details.path, 'Dockerfile'), context)];
                     case 2:
                         _a.sent();
                         return [2];

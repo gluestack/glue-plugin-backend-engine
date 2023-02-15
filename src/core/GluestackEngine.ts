@@ -19,11 +19,12 @@ import { includes } from "lodash";
 
 import { backendPlugins, noDockerfiles } from "../configs/constants";
 
-import { writeFile } from "../helpers/write-file";
-import { getFolders } from "../helpers/get-folders";
+const { writeFile } = require("@gluestack/helpers");
+const { removeSpecialChars } = require("@gluestack/helpers");
+const { getOSFolders } = require("@gluestack/helpers");
+
 import { waitInSeconds } from "../helpers/wait-in-seconds";
 import { replaceKeyword } from "../helpers/replace-keyword";
-import { removeSpecialChars } from "../helpers/remove-special-chars";
 import { isValidGluePlugin, isDaprService, isGlueService } from "../helpers/valid-glue-service";
 
 const services = require("@gluestack/framework/constants/services");
@@ -319,7 +320,7 @@ export default class GluestackEngine implements IGlueEngine {
     );
 
     // constructing project name for docker compose command
-    const folders: any = await getFolders();
+    const folders: any = await getOSFolders();
     const lastFolder = folders[folders.length - 1];
     const projectName = `${lastFolder}_${backendInstancePath}`;
 
@@ -343,7 +344,7 @@ export default class GluestackEngine implements IGlueEngine {
     );
 
     // constructing project name for docker compose command
-    const folders = await getFolders();
+    const folders = await getOSFolders();
     const lastFolder = folders[folders.length - 1];
     const projectName = `${lastFolder}_${backendInstancePath}`;
 

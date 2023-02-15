@@ -1,10 +1,11 @@
-const colors = require("colors");
+const { fileExists } = require("@gluestack/helpers");
 
 import path from "path";
-import Table from "cli-table3";
+
 import { GlueStackPlugin } from "src";
-import { fileExists } from "../helpers/file-exists";
 import { timeStamp } from "../helpers/file-time-stamp";
+const { ConsoleTable } = require("@gluestack/helpers");
+
 
 export function cronList(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
@@ -15,12 +16,13 @@ export function cronList(program: any, glueStackPlugin: GlueStackPlugin) {
 
 export async function list(_glueStackPlugin: GlueStackPlugin) {
 	const cronsFilePath = "./backend/crons/crons.json";
-	let table = new Table({
-		head: [
-			colors.brightGreen("Schedule"),
-			colors.brightGreen("Run"),
-		],
-	});
+
+	const head: string[] = [
+		"Schedule",
+		"Run",
+	];
+
+	const rows: any = [];
 
 	if (!(await fileExists(cronsFilePath))) {
 		console.log("> Error: cron file missing!");
@@ -37,10 +39,10 @@ export async function list(_glueStackPlugin: GlueStackPlugin) {
 
 	for await (const data of fileData) {
 		const run = data.type === 'function' ? `function() [${data.value}]` : `webhook-url [${data.value}]`
-		table.push({ [data.schedule]: [run] });
+		rows.push({ [data.schedule]: [run] });
 	}
 
-	console.log(table.toString());
+	ConsoleTable.print(head, rows);
 
 	const lastModified = await timeStamp(cronsFilePath);
 	console.log(`Crons last updated: ${lastModified}`);

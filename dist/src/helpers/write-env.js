@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeEnv = exports.constructEnvFromJson = void 0;
-var write_file_1 = require("./write-file");
+var writeFile = require("@gluestack/helpers").writeFile;
 function constructEnvFromJson(functionInstance) {
     return __awaiter(this, void 0, void 0, function () {
         var keys;
@@ -70,7 +70,7 @@ function writeEnv(functionInstance) {
                     Object.keys(keys).forEach(function (key) {
                         env += "".concat(key, "=\"").concat(keys[key], "\"\n");
                     });
-                    return [4, (0, write_file_1.writeFile)(path, env)];
+                    return [4, writeFile(path, env)];
                 case 2:
                     _a.sent();
                     return [2];

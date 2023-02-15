@@ -38,15 +38,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addMainRouter = void 0;
 var path_1 = require("path");
-var write_file_1 = require("./write-file");
-var file_exists_1 = require("./file-exists");
+var writeFile = require("@gluestack/helpers").writeFile;
+var fileExists = require("@gluestack/helpers").fileExists;
 var construct = function (backendInstance, path) { return __awaiter(void 0, void 0, void 0, function () {
     var content;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 content = "module.exports = () => [\n  {\n    \"path\": \"/".concat(backendInstance, "\",\n    \"proxy\": {\n      \"path\": \"/\"\n    }\n  }\n];\n");
-                return [4, (0, write_file_1.writeFile)(path, content)];
+                return [4, writeFile(path, content)];
             case 1:
                 _a.sent();
                 return [2];
@@ -63,7 +63,7 @@ function addMainRouter(engineInstance) {
                     folders = installationPath.split("/");
                     projectName = folders[folders.length - 1];
                     path = (0, path_1.join)(installationPath, '..', 'router.js');
-                    return [4, (0, file_exists_1.fileExists)(path)];
+                    return [4, fileExists(path)];
                 case 1:
                     exist = _a.sent();
                     if (!!exist) return [3, 3];

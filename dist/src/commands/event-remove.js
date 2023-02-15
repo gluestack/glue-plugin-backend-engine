@@ -66,9 +66,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEvents = exports.eventRemove = void 0;
 var path_1 = require("path");
 var prompts = require("prompts");
-var get_directories_1 = require("../helpers/get-directories");
-var get_files_1 = require("../helpers/get-files");
-var write_file_1 = require("../helpers/write-file");
+var getDirectories = require("@gluestack/helpers").getDirectories;
+var getFiles = require("@gluestack/helpers").getFiles;
+var writeFile = require("@gluestack/helpers").writeFile;
 function eventRemove(program, glueStackPlugin) {
     program
         .command("event:remove")
@@ -163,7 +163,7 @@ function deleteEvents(_glueStackPlugin, args) {
                                         return [2, "continue"];
                                     }
                                     eventsArray.splice(eventIndex, 1);
-                                    return [4, (0, write_file_1.writeFile)(removeEvent.path, "module.exports = () => ".concat(JSON.stringify(__spreadArray([], eventsArray, true), null, 2), ";"))];
+                                    return [4, writeFile(removeEvent.path, "module.exports = () => ".concat(JSON.stringify(__spreadArray([], eventsArray, true), null, 2), ";"))];
                                 case 2:
                                     _o.sent();
                                     return [3, 4];
@@ -217,7 +217,7 @@ var scanAllEvents = function (type, directoryPath) { return __awaiter(void 0, vo
                 events = {};
                 events[type] = [];
                 if (!(type === "app")) return [3, 28];
-                return [4, (0, get_files_1.getFiles)(directoryPath)];
+                return [4, getFiles(directoryPath)];
             case 1:
                 files = _w.sent();
                 _w.label = 2;
@@ -295,7 +295,7 @@ var scanAllEvents = function (type, directoryPath) { return __awaiter(void 0, vo
                 return [7];
             case 26: return [7];
             case 27: return [2, events];
-            case 28: return [4, (0, get_directories_1.getDirectories)(directoryPath)];
+            case 28: return [4, getDirectories(directoryPath)];
             case 29:
                 dirs = _w.sent();
                 _w.label = 30;
@@ -314,7 +314,7 @@ var scanAllEvents = function (type, directoryPath) { return __awaiter(void 0, vo
                 dir = _p;
                 ;
                 tablepath = (0, path_1.join)(directoryPath, dir);
-                return [4, (0, get_files_1.getFiles)(tablepath)];
+                return [4, getFiles(tablepath)];
             case 34:
                 files = _w.sent();
                 _w.label = 35;

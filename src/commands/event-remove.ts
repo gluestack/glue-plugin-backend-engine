@@ -1,9 +1,10 @@
 import { join } from "path";
-const prompts = require("prompts");
 import { GlueStackPlugin } from "src";
-import { getDirectories } from "../helpers/get-directories";
-import { getFiles } from "../helpers/get-files";
-import { writeFile } from "../helpers/write-file";
+
+const prompts = require("prompts");
+const { getDirectories } = require("@gluestack/helpers");
+const { getFiles } = require("@gluestack/helpers");
+const { writeFile } = require("@gluestack/helpers");
 
 export function eventRemove(program: any, glueStackPlugin: GlueStackPlugin) {
 	program
@@ -83,7 +84,8 @@ const scanAllEvents = async (type: string, directoryPath: string) => {
 	}
 
 	const dirs = await getDirectories(directoryPath);
-	for await (const dir of dirs) {;
+	for await (const dir of dirs) {
+		;
 
 		const tablepath = join(directoryPath, dir);
 		const files = await getFiles(tablepath);
@@ -102,11 +104,11 @@ const scanAllEvents = async (type: string, directoryPath: string) => {
 
 const removeEvents = async (events: any) => {
 	const choices = events.map((_event: any) => ({
-		title: `${_event.type}${_event.dir ? ' > ' + _event.dir  : ''} > ${_event.file} > ${JSON.stringify(_event.content)}`,
+		title: `${_event.type}${_event.dir ? ' > ' + _event.dir : ''} > ${_event.file} > ${JSON.stringify(_event.content)}`,
 		value: { ..._event }
 	}));
 
-	const  { removables, confirm } = await prompts([{
+	const { removables, confirm } = await prompts([{
 		type: "multiselect",
 		name: "removables",
 		message: "Select event(s) to remove",

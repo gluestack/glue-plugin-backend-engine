@@ -38,13 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addMainCron = void 0;
 var path_1 = require("path");
-var write_file_1 = require("./write-file");
-var file_exists_1 = require("./file-exists");
-var create_folder_1 = require("./create-folder");
+var writeFile = require("@gluestack/helpers").writeFile;
+var fileExists = require("@gluestack/helpers").fileExists;
+var createFolder = require("@gluestack/helpers").createFolder;
 var construct = function (path) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, (0, create_folder_1.createFolder)(path)];
+            case 0: return [4, createFolder(path)];
             case 1:
                 _a.sent();
                 return [2];
@@ -57,7 +57,7 @@ var checkCreate = function (installationPath, fileName, fileContent) { return __
         switch (_a.label) {
             case 0:
                 path = (0, path_1.join)(installationPath, '..', 'crons');
-                return [4, (0, file_exists_1.fileExists)(path)];
+                return [4, fileExists(path)];
             case 1:
                 appExist = _a.sent();
                 if (!!appExist) return [3, 3];
@@ -65,7 +65,7 @@ var checkCreate = function (installationPath, fileName, fileContent) { return __
             case 2:
                 _a.sent();
                 _a.label = 3;
-            case 3: return [4, (0, write_file_1.writeFile)((0, path_1.join)(path, 'crons.json'), fileContent)];
+            case 3: return [4, writeFile((0, path_1.join)(path, 'crons.json'), fileContent)];
             case 4:
                 _a.sent();
                 return [2];

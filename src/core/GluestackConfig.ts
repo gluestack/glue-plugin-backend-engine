@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 
-import { fileExists } from '../helpers/file-exists';
-import { writeFile } from '../helpers/write-file';
+const { fileExists } = require("@gluestack/helpers");
+const { writeFile } = require("@gluestack/helpers");
 
 export const config: any = {
   postgresInstancePath: '',

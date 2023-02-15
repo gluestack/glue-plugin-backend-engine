@@ -1,4 +1,5 @@
-import { writeFile } from "./write-file";
+const { writeFile } = require("@gluestack/helpers");
+
 import { PluginInstance } from "../PluginInstance";
 
 export async function constructEnvFromJson(functionInstance: PluginInstance) {

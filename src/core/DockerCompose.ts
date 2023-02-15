@@ -1,10 +1,11 @@
+const { removeSpecialChars } = require("@gluestack/helpers");
+
 import { join } from 'path';
 import * as yaml from 'yaml';
 import { writeFileSync } from 'fs';
 
 import { execute } from '../helpers/spawn';
 import { getConfig } from './GluestackConfig';
-import { removeSpecialChars } from '../helpers/remove-special-chars';
 
 import { IStatelessPlugin } from './types/IStatelessPlugin';
 import { IDockerCompose, IService } from './types/IDockerCompose';

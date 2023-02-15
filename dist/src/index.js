@@ -49,7 +49,7 @@ var add_main_cron_1 = require("./helpers/add-main-cron");
 var commands_1 = require("./commands");
 var service_add_1 = require("./commands/service-add");
 var rewrite_file_1 = require("./helpers/rewrite-file");
-var update_workspaces_1 = require("./helpers/update-workspaces");
+var Workspaces = require("@gluestack/helpers").Workspaces;
 var GlueStackPlugin = (function () {
     function GlueStackPlugin(app, gluePluginStore) {
         this.type = "stateless";
@@ -119,7 +119,7 @@ var GlueStackPlugin = (function () {
                     case 7:
                         _a.sent();
                         rootPackage = "".concat(process.cwd(), "/package.json");
-                        return [4, (0, update_workspaces_1.updateWorkspaces)(rootPackage, engineInstance.getInstallationPath())];
+                        return [4, Workspaces.append(rootPackage, engineInstance.getInstallationPath())];
                     case 8:
                         _a.sent();
                         _a.label = 9;

@@ -38,12 +38,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addMainEvents = void 0;
 var path_1 = require("path");
-var file_exists_1 = require("./file-exists");
-var create_folder_1 = require("./create-folder");
+var fileExists = require("@gluestack/helpers").fileExists;
+var createFolder = require("@gluestack/helpers").createFolder;
 var construct = function (path) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, (0, create_folder_1.createFolder)(path)];
+            case 0: return [4, createFolder(path)];
             case 1:
                 _a.sent();
                 return [2];
@@ -56,7 +56,7 @@ var checkCreate = function (installationPath, folderName) { return __awaiter(voi
         switch (_a.label) {
             case 0:
                 path = (0, path_1.join)(installationPath, '..', 'events', folderName);
-                return [4, (0, file_exists_1.fileExists)(path)];
+                return [4, fileExists(path)];
             case 1:
                 appExist = _a.sent();
                 if (!!appExist) return [3, 3];

@@ -38,9 +38,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteEvents = exports.cronRemove = void 0;
 var prompts = require("prompts");
+var writeFile = require("@gluestack/helpers").writeFile;
+var fileExists = require("@gluestack/helpers").fileExists;
 var path_1 = require("path");
-var write_file_1 = require("../helpers/write-file");
-var file_exists_1 = require("../helpers/file-exists");
 function cronRemove(program, glueStackPlugin) {
     program
         .command("cron:remove")
@@ -54,7 +54,7 @@ var deleteEvents = function (_glueStackPlugin) { return __awaiter(void 0, void 0
         switch (_b.label) {
             case 0:
                 cronsFilePath = './backend/crons/crons.json';
-                return [4, (0, file_exists_1.fileExists)(cronsFilePath)];
+                return [4, fileExists(cronsFilePath)];
             case 1:
                 if (!(_b.sent())) {
                     console.log('error: cron file missing!');
@@ -74,7 +74,7 @@ var deleteEvents = function (_glueStackPlugin) { return __awaiter(void 0, void 0
                     process.exit(-1);
                 }
                 newCrons = crons.filter(function (_, index) { return !removables.includes(index); });
-                return [4, (0, write_file_1.writeFile)(dataFilePath, JSON.stringify(newCrons, null, 2))];
+                return [4, writeFile(dataFilePath, JSON.stringify(newCrons, null, 2))];
             case 3:
                 _b.sent();
                 return [2];

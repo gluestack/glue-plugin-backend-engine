@@ -1,8 +1,9 @@
 import { join } from "path";
-import { writeFile } from "./write-file";
-import { fileExists } from "./file-exists";
-import { createFolder } from "./create-folder";
 import { PluginInstance } from "../PluginInstance";
+
+const { writeFile } = require("@gluestack/helpers");
+const { fileExists } = require("@gluestack/helpers");
+const { createFolder } = require("@gluestack/helpers");
 
 const construct = async (path: string): Promise<void> => {
   await createFolder(path);

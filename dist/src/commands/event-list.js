@@ -48,10 +48,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eventList = void 0;
 var path_1 = __importDefault(require("path"));
-var cli_table3_1 = __importDefault(require("cli-table3"));
 var promises_1 = require("fs/promises");
 var file_time_stamp_1 = require("../helpers/file-time-stamp");
-var colors = require("colors");
+var ConsoleTable = require("@gluestack/helpers").ConsoleTable;
 function eventList(program, glueStackPlugin) {
     program
         .command("event:list")
@@ -63,20 +62,19 @@ function eventList(program, glueStackPlugin) {
 }
 exports.eventList = eventList;
 var list = function (_glueStackPlugin, args) { return __awaiter(void 0, void 0, void 0, function () {
-    var dbEventPath, appEventPath, table, _a;
+    var dbEventPath, appEventPath, head, rows, _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 dbEventPath = "./backend/events/database";
                 appEventPath = "./backend/events/app";
-                table = new cli_table3_1.default({
-                    head: [
-                        colors.brightGreen("Filepath"),
-                        colors.brightGreen("Functions"),
-                        colors.brightGreen("Webhooks"),
-                        colors.brightGreen("Modified on"),
-                    ],
-                });
+                head = [
+                    "Filepath",
+                    "Functions",
+                    "Webhooks",
+                    "Modified on",
+                ];
+                rows = [];
                 _a = true;
                 switch (_a) {
                     case args.hasOwnProperty("all") || Object.entries(args).length === 0: return [3, 1];
@@ -84,32 +82,32 @@ var list = function (_glueStackPlugin, args) { return __awaiter(void 0, void 0, 
                     case args.hasOwnProperty("database"): return [3, 8];
                 }
                 return [3, 11];
-            case 1: return [4, getEvents(appEventPath, table, false)];
+            case 1: return [4, getEvents(appEventPath, rows, false)];
             case 2:
                 _b.sent();
-                return [4, getEvents(dbEventPath, table, false)];
+                return [4, getEvents(dbEventPath, rows, false)];
             case 3:
                 _b.sent();
-                return [4, sortingArray(table)];
+                return [4, sortingArray(rows)];
             case 4:
                 _b.sent();
-                console.log(table.toString());
+                ConsoleTable.print(head, rows);
                 return [3, 11];
-            case 5: return [4, getEvents(appEventPath, table, false)];
+            case 5: return [4, getEvents(appEventPath, rows, false)];
             case 6:
                 _b.sent();
-                return [4, sortingArray(table)];
+                return [4, sortingArray(rows)];
             case 7:
                 _b.sent();
-                console.log(table.toString());
+                ConsoleTable.print(head, rows);
                 return [3, 11];
-            case 8: return [4, getEvents(dbEventPath, table, false)];
+            case 8: return [4, getEvents(dbEventPath, rows, false)];
             case 9:
                 _b.sent();
-                return [4, sortingArray(table)];
+                return [4, sortingArray(rows)];
             case 10:
                 _b.sent();
-                console.log(table.toString());
+                ConsoleTable.print(head, rows);
                 return [3, 11];
             case 11: return [2];
         }

@@ -56,11 +56,11 @@ exports.eventAdd = void 0;
 var colors = require('colors');
 var prompts = require("prompts");
 var services = require("@gluestack/framework/constants/services");
+var fileExists = require("@gluestack/helpers").fileExists;
+var getDirectories = require("@gluestack/helpers").getDirectories;
 var path_1 = require("path");
 var unique_1 = require("../helpers/unique");
-var file_exists_1 = require("../helpers/file-exists");
-var get_directories_1 = require("../helpers/get-directories");
-var remove_special_chars_1 = require("../helpers/remove-special-chars");
+var removeSpecialChars = require("@gluestack/helpers").removeSpecialChars;
 var write_content_to_filepath_1 = require("../helpers/write-content-to-filepath");
 function eventAdd(program, glueStackPlugin) {
     program
@@ -112,13 +112,13 @@ var create = function (gluestackPlugin) { return __awaiter(void 0, void 0, void 
                 }
                 functionName = instance.getName();
                 functionsPath = (0, path_1.join)(process.cwd(), instance.getInstallationPath(), 'functions');
-                return [4, (0, file_exists_1.fileExists)(functionsPath)];
+                return [4, fileExists(functionsPath)];
             case 10:
                 if (!(_a.sent())) {
                     console.log(colors.brightRed("> No functions found in ".concat((0, path_1.relative)('.', functionsPath), ". Please add one and try again!")));
                     return [2];
                 }
-                return [4, (0, get_directories_1.getDirectories)(functionsPath)];
+                return [4, getDirectories(functionsPath)];
             case 11:
                 directories = _a.sent();
                 if (!directories.length) {
@@ -207,7 +207,7 @@ var appendFile = function (filepath, content) { return __awaiter(void 0, void 0,
     var fileContent, uniqueContent, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, (0, file_exists_1.fileExists)(filepath)];
+            case 0: return [4, fileExists(filepath)];
             case 1:
                 if (!!(_a.sent())) return [3, 3];
                 return [4, (0, write_content_to_filepath_1.writeContentToFilePath)(filepath, "module.exports = () => ".concat(JSON.stringify([content], null, 2), ";"))];
@@ -471,7 +471,7 @@ var INPUT_EVENT_NAME = function () { return __awaiter(void 0, void 0, void 0, fu
                     name: "value",
                     message: "Please provide event name",
                     validate: function (value) { return (value.length > 0) ? true : false; },
-                    format: function (value) { return (0, remove_special_chars_1.removeSpecialChars)(value); }
+                    format: function (value) { return removeSpecialChars(value); }
                 })];
             case 1:
                 value = (_a.sent()).value;

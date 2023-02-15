@@ -49,9 +49,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = require("path");
 var promises_1 = require("node:fs/promises");
 var spawn_1 = require("../helpers/spawn");
-var get_files_1 = require("../helpers/get-files");
-var file_exists_1 = require("../helpers/file-exists");
-var remove_special_chars_1 = require("../helpers/remove-special-chars");
+var getFiles = require("@gluestack/helpers").getFiles;
+var fileExists = require("@gluestack/helpers").fileExists;
+var removeSpecialChars = require("@gluestack/helpers").removeSpecialChars;
 var GluestackConfig_1 = require("./GluestackConfig");
 var HasuraMetadata_1 = __importDefault(require("./HasuraMetadata"));
 var GluestackEvent_1 = __importDefault(require("./GluestackEvent"));
@@ -148,12 +148,12 @@ var HasuraEngine = (function () {
                         hasuraEnvs = this.metadata.hasuraEnvs;
                         filepath = (0, path_1.join)(process.cwd(), (0, GluestackConfig_1.getConfig)('backendInstancePath'), 'services', this.pluginName);
                         sqlsPath = (0, path_1.join)(filepath, 'seeds', hasuraEnvs.HASURA_GRAPHQL_DB_NAME);
-                        return [4, (0, file_exists_1.fileExists)(sqlsPath)];
+                        return [4, fileExists(sqlsPath)];
                     case 1:
                         if (!(_a.sent())) {
                             return [2];
                         }
-                        return [4, (0, get_files_1.getFiles)(sqlsPath)];
+                        return [4, getFiles(sqlsPath)];
                     case 2:
                         files = _a.sent();
                         if (!files || files.length === 0) {
@@ -281,7 +281,7 @@ var HasuraEngine = (function () {
                             return [2, Promise.resolve('No auth instance path found')];
                         }
                         tracksPath = (0, path_1.join)(process.cwd(), backendInstancePath, 'services', this.pluginName, 'tracks');
-                        if (!(0, file_exists_1.fileExists)(tracksPath)) {
+                        if (!fileExists(tracksPath)) {
                             console.log('> Nothing to track into hasura engine...');
                             return [2, Promise.resolve('No tracks folder found. Skipping...')];
                         }
@@ -366,7 +366,7 @@ var HasuraEngine = (function () {
                         _o.trys.push([3, , 24, 25]);
                         plugin = _c;
                         functionsDirectory = (0, path_1.join)(plugin.path, 'functions');
-                        return [4, (0, file_exists_1.fileExists)(functionsDirectory)];
+                        return [4, fileExists(functionsDirectory)];
                     case 4:
                         exist = _o.sent();
                         if (!exist) {
@@ -394,22 +394,22 @@ var HasuraEngine = (function () {
                         actionSettingFile = (0, path_1.join)(functionsDirectory, dirent.name, this.actionSettingFile);
                         _m = dirent.isDirectory();
                         if (!_m) return [3, 11];
-                        return [4, (0, file_exists_1.fileExists)(actionGQLFile)];
+                        return [4, fileExists(actionGQLFile)];
                     case 10:
                         _m = (_o.sent());
                         _o.label = 11;
                     case 11:
                         _l = _m;
                         if (!_l) return [3, 13];
-                        return [4, (0, file_exists_1.fileExists)(actionSettingFile)];
+                        return [4, fileExists(actionSettingFile)];
                     case 12:
                         _l = (_o.sent());
                         _o.label = 13;
                     case 13:
                         if (_l) {
                             this.actions.push({
-                                name: (0, remove_special_chars_1.removeSpecialChars)(dirent.name),
-                                handler: (0, remove_special_chars_1.removeSpecialChars)(plugin.instance),
+                                name: removeSpecialChars(dirent.name),
+                                handler: removeSpecialChars(plugin.instance),
                                 path: (0, path_1.join)(functionsDirectory, dirent.name),
                                 grapqhl_path: actionGQLFile,
                                 setting_path: actionSettingFile
