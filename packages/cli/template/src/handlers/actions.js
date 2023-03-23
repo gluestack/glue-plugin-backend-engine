@@ -9,14 +9,14 @@
 const { DaprClient, HttpMethod } = require('@dapr/dapr');
 
 module.exports = async (req, res) => {
-  if (!req.params || !req.params.action_name ) {
+  if ( !req.params || !req.params.action_name ) {
     return res.status(500).json({
       status: false,
       message: '"action" is missing from request param'
     });
   }
 
-  if (!req.body.action ) {
+  if ( !req.body.action ) {
     return res.status(500).json({
       status: false,
       message: '"action" is missing from request data'
