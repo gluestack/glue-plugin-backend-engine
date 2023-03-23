@@ -11,6 +11,20 @@ const callManager = require('../call-manager');
 const { readFile } = require('node:fs/promises');
 
 module.exports = async (req, res) => {
+  if ( !req.body || !req.body.table ) {
+    return res.status(500).json({
+      status: false,
+      message: 'Table info is missing from request body'
+    });
+  }
+  
+  if ( !req.body.table.tableName ) {
+    return res.status(500).json({
+      status: false,
+      message: 'Table name is missing'
+    });
+  }
+
   const { event, table } = req.body;
   const { name: tableName } = table;
   const { session_variables, op , data } = event;
