@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
   if (!req.body.action ) {
     return res.status(500).json({
       status: false,
-      message: '"action.name" is missing from request data'
+      message: '"action" is missing from request data'
     });
   }
 
