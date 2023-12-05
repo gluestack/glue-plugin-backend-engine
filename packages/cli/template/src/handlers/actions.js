@@ -6,7 +6,7 @@
  *
  * @returns {Promise<void>}
  */
-const { DaprClient, HttpMethod } = require('@dapr/dapr');
+const axios = require('axios');
 
 module.exports = async (req, res) => {
   if ( !req.params || !req.params.action_name ) {
@@ -26,22 +26,16 @@ module.exports = async (req, res) => {
   const { headers, body } = req;
   if (headers["content-length"]) delete headers["content-length"];
 
-  const daprHost = '127.0.0.1';
-  const daprPort = 3500;
-
-  const client = new DaprClient(daprHost, daprPort);
-
   const serviceAppId = req.params.action_name;
   const serviceMethod = body.action.name;
 
   try {
-    const data = await client.invoker.invoke(
-      serviceAppId,
-      serviceMethod,
-      HttpMethod.POST,
-      { ...body },
-      { headers }
-    );
+    const { data } = await axios({
+      method: req.method,
+      url: `http://${serviceAppId}:9000/${serviceMethod}`,
+      data: body,
+      headers: headers,
+    });
     return res.status(200).json(data);
   } catch (err) {
     console.log(`Error invoking action ${serviceAppId}::${serviceMethod}: ${err}`);

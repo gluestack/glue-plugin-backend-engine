@@ -6,7 +6,7 @@
  *
  * @returns {Promise<import('express').Response>}
  */
-const { DaprClient, HttpMethod } = require('@dapr/dapr');
+const axios = require('axios');
 
 module.exports = async (req, res) => {
   const { headers, body } = req;
@@ -16,34 +16,28 @@ module.exports = async (req, res) => {
     return res.json({ status: false, message: 'Missing "action_name"' });
   }
 
-  const daprHost = '127.0.0.1';
-  const daprPort = 3500;
-
-  const client = new DaprClient(daprHost, daprPort);
-
   let data = undefined;
   const appId = body.action_name;
   const options = { headers: { ...headers, "X-Glue-Invoke": "server" } };
   const methodName = body.hasOwnProperty('method_uri') ? body.method_uri : 'functions';
-  const method = body.hasOwnProperty('method_name') ? body.method_name.toUpperCase() : HttpMethod.POST;
+  const method = body.hasOwnProperty('method_name') ? body.method_name.toUpperCase() : 'post';
 
   if (method !== 'GET') {
     data = body.hasOwnProperty('data') ? { ...body.data } : {};
   }
 
   try {
-    const resp = await client.invoker.invoke(
-      appId,
-      methodName,
+    const resp = await axios({
       method,
+      url: `http://${appId}:9000/${methodName}`,
       data,
-      options
-    );
+      headers: options.headers,
+    });
 
     return res.status(200).json({
       status: true,
       message: 'OK',
-      data: resp
+      data: resp.data
     });
   } catch (err) {
     console.log(`Error invoking ${appId}::${methodName}: ${err}`);
